@@ -10,8 +10,7 @@
 
 \maketitle
 
-\section*{Question 1}
-\subsection*{Part (a)}
+\section*{Part (a)}
 
 The total probability density function is given by:
 
@@ -78,7 +77,69 @@ f + (1-f) = 1.
 
 Thus, the normalisation condition is satisfied for $p$ over $M \in [-\infty, +\infty]$.
 
-\subsection*{Part (b)}
+\section*{Part (b)}
+
+When M is restricted to the range $M \in [\alpha, \beta]$, the probability density function is defined:
+
+\[ 
+p(M; \boldsymbol{\theta}) = 
+\begin{cases} 
+A[fs(M) + (1-f)b(M)] & \text{for } M \in [\alpha, \beta], \\
+0 & \text{otherwise}.
+\end{cases}
+\]
+where $\boldsymbol{\theta} \equiv (f, \lambda, \mu, \sigma)$ are the parameters and $A$ is a normalisation factor. For $p$ to be properly normalised, we must have:
+\[
+\int_{\alpha}^{\beta} p(X) \, dX =
+\int_{\alpha}^{\beta} Afs(X) + A(1-f)b(X) \, dX = 1.
+\]
+Then we have:
+\[
+1 = \int_{\alpha}^{\beta} p(X) \, dX = 
+\int_{-\infty}^{\beta} p(X) \, dX - \int_{-\infty}^{\alpha} p(X) \, dX
+\]
+\[
+= Af \left( \int_{-\infty}^{\beta} s(X) \, dX - \int_{-\infty}^{\alpha} s(X) \, dX \right) +
+A(1-f)\left( \int_{-\infty}^{\beta} b(X) \, dX - \int_{-\infty}^{\alpha} b(X) \, dX \right),
+\]
+thus:
+\[
+1 = Af \left( F_s(\beta) - F_s(\alpha) \right) +
+A(1-f)\left( F_b(\beta) - F_b(\alpha) \right),
+\]
+where $F_s$, $F_b$ are the cumulative distribution functions of the (normal) signal distribution, $s$, and the (exponential decay) background distribution, $b$, respectively. These are given:
+\[
+F_s(X) = \Phi(\frac{X-\mu}{\sigma})
+\]
+\[
+F_b(X) = 
+\begin{cases} 
+1 - e^{-\lambda X} & \text{for } X \geq 0, \\
+0 & \text{for } X < 0.
+\end{cases}
+\]
+
+If we assume that $\alpha$ and $\beta$ are positive, then we can solve for $A$ to find:
+\[
+A = \frac{1}{
+f \left( \Phi(\frac{\beta-\mu}{\sigma}) - \Phi(\frac{\alpha-\mu}{\sigma}) \right) +
+(1-f)( e^{-\lambda\alpha} - e^{-\lambda\beta} )
+}
+\]
+
+Finally, the full expression for the total probability density function, assuming $\alpha, \beta > 0$, is:
+\[
+p(M; \boldsymbol{\theta}) = 
+\frac{
+\frac{f}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(M - \mu)^2}{2\sigma^2}\right) + (1-f)\lambda e^{-\lambda M}
+}
+{
+f \left( \Phi(\frac{\beta-\mu}{\sigma}) - \Phi(\frac{\alpha-\mu}{\sigma}) \right) +
+(1-f)( e^{-\lambda\alpha} - e^{-\lambda\beta} )
+}
+\]
+
+\section*{Part (c)}
 
 
 \end{document}
