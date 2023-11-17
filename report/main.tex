@@ -16,10 +16,7 @@
 The total probability density function is given by:
 
 \[ p(M; f, \lambda, \mu, \sigma) = fs(M; \mu, \sigma) + (1-f)b(M; \lambda), \]
-where $s(M; \mu, \sigma)$ is the normal distribution:
-
-\[ s(M; \mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(M - \mu)^2}{2\sigma^2}\right), \]
-and $ b(M; \lambda)$ is the exponential decay distribution:
+where $s(M; \mu, \sigma)$ is the normal distribution and $ b(M; \lambda)$ is the exponential decay distribution, which is only non-zero for $M \geq 0$:
 
 \[ 
 b(M; \lambda) = 
@@ -30,15 +27,7 @@ b(M; \lambda) =
 \]
 
 The condition for $p(M; f, \lambda, \mu, \sigma)$ to be properly normalised over $M \in [-\infty, +\infty]$ is:
-\[ \int_{-\infty}^{+\infty} p \, dM = 1 \]
-
-We have:
-\[ 
-\int_{-\infty}^{+\infty} p \, dM = 
-\int_{-\infty}^{+\infty} fs + (1-f)b \, dM =
-f\int_{-\infty}^{+\infty} s \, dM + 
-(1-f)\int_{0}^{+\infty} b \, dM 
-\]
+\[ \int_{-\infty}^{+\infty} p \, dM = 1, \]
 
 To show that $p$ is properly normalised we will use the identity:
 \begin{equation}
@@ -46,20 +35,28 @@ To show that $p$ is properly normalised we will use the identity:
 \label{eq:exponential_identity}
 \end{equation}
 
-To find the first term we have:
+We have:
+\[ 
+\int_{-\infty}^{+\infty} p \, dM = 
+\int_{-\infty}^{+\infty} fs + (1-f)b \, dM =
+f\int_{-\infty}^{+\infty} s \, dM + 
+(1-f)\int_{0}^{+\infty} b \, dM.
+\]
+
+For the first term, we have:
 \[
 \int_{-\infty}^{+\infty} s \, dM =
-\int_{-\infty}^{+\infty} \frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(M - \mu)^2}{2\sigma^2}\right) \, dM 
+\int_{-\infty}^{+\infty} \frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(M - \mu)^2}{2\sigma^2}\right) \, dM.
 \]
 We use the substitution $x = M - \mu$ such that $dx = dM$ and the limits are the same since $x(M \to \pm\infty) \to \pm\infty$ for any finite $\mu$. Then we have:
 \[
 \int_{-\infty}^{+\infty} s \, dM =
-\frac{1}{\sigma\sqrt{2\pi}} \int_{-\infty}^{+\infty} \exp\left(-\frac{x^2}{2\sigma^2}\right) \, dx 
+\frac{1}{\sigma\sqrt{2\pi}} \int_{-\infty}^{+\infty} \exp\left(-\frac{x^2}{2\sigma^2}\right) \, dx.
 \]
 Using identity \eqref{eq:exponential_identity} with $a = \frac{1}{2\sigma^2}$, we find that:
 \[
 \int_{-\infty}^{+\infty} s \, dM =
-\frac{1}{\sigma\sqrt{2\pi}} \sqrt{2\sigma^2\pi} = 1
+\frac{1}{\sigma\sqrt{2\pi}} \sqrt{2\sigma^2\pi} = 1.
 \]
 
 To find the second term we have:
@@ -68,7 +65,7 @@ To find the second term we have:
 \int_{0}^{c} \lambda e^{-\lambda M} \, dM =
 (-e^{-\lambda M}) |_0^{c} =
 1 - e^{-\lambda c}
-\xrightarrow[c \to +\infty]{} 1
+\xrightarrow[c \to +\infty]{} 1.
 \]
 
 Hence, we see that:
@@ -76,10 +73,10 @@ Hence, we see that:
 \int_{-\infty}^{+\infty} p \, dM = 
 f\int_{-\infty}^{+\infty} s \, dM + 
 (1-f)\int_{0}^{+\infty} b \, dM =
-f + (1-f) = 1
+f + (1-f) = 1.
 \]
 
-Thus, the normalisation condition is satisfied for $p$ over $M \in [-\infty, +\infty]$
+Thus, the normalisation condition is satisfied for $p$ over $M \in [-\infty, +\infty]$.
 
 \subsection*{Part (b)}
 
