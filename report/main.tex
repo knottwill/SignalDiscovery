@@ -1,0 +1,87 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb}
+\usepackage[margin=3cm]{geometry}
+
+\title{S1: Principals of Data Science - Coursework}
+\author{William Knottenbelt, wdk24}
+
+\begin{document}
+
+\maketitle
+
+\section*{Question 1}
+\subsection*{Part (a)}
+
+The total probability density function is given by:
+
+\[ p(M; f, \lambda, \mu, \sigma) = fs(M; \mu, \sigma) + (1-f)b(M; \lambda), \]
+where $s(M; \mu, \sigma)$ is the normal distribution:
+
+\[ s(M; \mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(M - \mu)^2}{2\sigma^2}\right), \]
+and $ b(M; \lambda)$ is the exponential decay distribution:
+
+\[ 
+b(M; \lambda) = 
+\begin{cases} 
+\lambda e^{-\lambda M} & \text{for } M \geq 0, \\
+0 & \text{for } M < 0.
+\end{cases}
+\]
+
+The condition for $p(M; f, \lambda, \mu, \sigma)$ to be properly normalised over $M \in [-\infty, +\infty]$ is:
+\[ \int_{-\infty}^{+\infty} p \, dM = 1 \]
+
+We have:
+\[ 
+\int_{-\infty}^{+\infty} p \, dM = 
+\int_{-\infty}^{+\infty} fs + (1-f)b \, dM =
+f\int_{-\infty}^{+\infty} s \, dM + 
+(1-f)\int_{0}^{+\infty} b \, dM 
+\]
+
+To show that $p$ is properly normalised we will use the identity:
+\begin{equation}
+\int_{-\infty}^{+\infty} e^{-ax^2} = \sqrt{\frac{\pi}{a}},
+\label{eq:exponential_identity}
+\end{equation}
+
+To find the first term we have:
+\[
+\int_{-\infty}^{+\infty} s \, dM =
+\int_{-\infty}^{+\infty} \frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(M - \mu)^2}{2\sigma^2}\right) \, dM 
+\]
+We use the substitution $x = M - \mu$ such that $dx = dM$ and the limits are the same since $x(M \to \pm\infty) \to \pm\infty$ for any finite $\mu$. Then we have:
+\[
+\int_{-\infty}^{+\infty} s \, dM =
+\frac{1}{\sigma\sqrt{2\pi}} \int_{-\infty}^{+\infty} \exp\left(-\frac{x^2}{2\sigma^2}\right) \, dx 
+\]
+Using identity \eqref{eq:exponential_identity} with $a = \frac{1}{2\sigma^2}$, we find that:
+\[
+\int_{-\infty}^{+\infty} s \, dM =
+\frac{1}{\sigma\sqrt{2\pi}} \sqrt{2\sigma^2\pi} = 1
+\]
+
+To find the second term we have:
+\[
+\int_{0}^{c} b \, dM =
+\int_{0}^{c} \lambda e^{-\lambda M} \, dM =
+(-e^{-\lambda M}) |_0^{c} =
+1 - e^{-\lambda c}
+\xrightarrow[c \to +\infty]{} 1
+\]
+
+Hence, we see that:
+\[ 
+\int_{-\infty}^{+\infty} p \, dM = 
+f\int_{-\infty}^{+\infty} s \, dM + 
+(1-f)\int_{0}^{+\infty} b \, dM =
+f + (1-f) = 1
+\]
+
+Thus, the normalisation condition is satisfied for $p$ over $M \in [-\infty, +\infty]$
+
+\subsection*{Part (b)}
+
+
+\end{document}
