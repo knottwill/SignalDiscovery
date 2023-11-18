@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.stats import norm, expon
+from scipy.integrate import quad
 
 def normalisation_factor(f, lam, mu, sigma, alpha, beta):
     """
@@ -42,3 +43,12 @@ def normalisation_factor(f, lam, mu, sigma, alpha, beta):
     expon_prob = expon.cdf(x=beta, scale=1/lam) - expon.cdf(x=alpha, scale=1/lam)
 
     return 1/(f*norm_prob + (1-f)*expon_prob)
+
+##############################
+### add comments/docstrings here
+###############################
+def total_pdf(M, f, lam, mu, sigma, alpha, beta):
+
+    A = normalisation_factor(f, lam, mu, sigma, alpha, beta)
+
+    return A*(f*norm.pdf(x=M, loc=mu, scale=sigma) + (1-f)*expon.pdf(x=beta, scale=1/lam))
