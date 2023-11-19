@@ -1,54 +1,121 @@
 import numpy as np
 from scipy.stats import norm, expon
+import matplotlib.pyplot as plt
 from scipy.integrate import quad
 
-def normalisation_factor(f, lam, mu, sigma, alpha, beta):
+def signal_pdf(M, mu, sigma, alpha, beta):
     """
-    Normalisation Factor
+    Signal Probability Density Function
 
-    Calculates the normalisation factor for the total probability distribution 
-    (ie. signal + background distribution), given the upper and lower bounds: alpha, beta.
-    We are assuming that alpha and beta are positive
+    Computes the normalized probability density function of the
+    signal, described by a normal distribution, within the range 
+    [alpha, beta]
 
     Parameters
     -----------
-    f: float
-        the fraction of signal, must be within [0, 1]
-    lam
-        decay constant (lambda), must be positive
-    mu
-        mean for normal distribution
-    sigma
-        standard deviation for normal distribution
-    alpha
-        lower bound of random variable
-    beta
-        upper bound of random variable
+    M: float or array-like
+        The value(s) at which to evaluate the PDF.
+    mu: float
+        The mean of the normal distribution.
+    sigma: float
+        The standard deviation of the normal distribution.
+    alpha: float
+        The lower bound of the range of interest.
+    beta: float
+        The upper bound of the range of interest.
+
+    Returns
+    ----------
+    float or array-like
+        Normalized PDF value(s) of the signal.
+    """
+    assert(alpha > 0)
+    assert(beta > 0)
+    assert(beta > alpha)
+    assert(sigma > 0)
+
+    # Calculate the total probability within [alpha, beta] for the normal distribution
+    total_prob = norm.cdf(x=beta, loc=mu, scale=sigma) - norm.cdf(x=alpha, loc=mu, scale=sigma)
+
+    # Normalization factor to ensure the PDF integrates to 1 within [alpha, beta]
+    normalisation_factor = 1 / total_prob
+
+    # Return the normalized PDF values for the given values of M
+    return normalisation_factor * norm.pdf(x=M, loc=mu, scale=sigma)
+    
+
+def background_pdf(M, lam, alpha, beta):
+    """
+    Background Probability Density Function
+
+    Computes the normalized probability density function of the 
+    background, described by an exponential decay distribution, 
+    within the range [alpha, beta]
+
+    Parameters
+    -----------
+    M: float or array-like
+        The value(s) at which to evaluate the PDF.
+    lam: float
+        The decay constant of the exponential distribution.
+    alpha: float
+        The lower bound of the range of interest.
+    beta: float
+        The upper bound of the range of interest.
 
     Returns
     -----------
-    float
-        the normalisation factor
+    float or array-like
+        Normalized PDF value(s) of the background.
+    """
+
+    assert(lam > 0)
+    assert(alpha > 0)
+    assert(beta > 0)
+    assert(beta > alpha)
+
+    # Calculate the total probability within [alpha, beta] for the exponential distribution
+    total_prob = expon.cdf(x=beta, scale=1 / lam) - expon.cdf(x=alpha, scale=1 / lam)
+
+    # Normalization factor to ensure the PDF integrates to 1 within [alpha, beta]
+    normalisation_factor = 1 / total_prob
+
+    # Return the normalized PDF values for the given values of M
+    return normalisation_factor * expon.pdf(x=M, scale=1 / lam)
+
+def total_pdf(M, f, lam, mu, sigma, alpha, beta):
+    """
+    Computes the combined probability density function (PDF) for a mixture
+    of a signal and background within a specified range.
+
+    Parameters
+    -----------
+    M: float or array-like
+        The value(s) at which to evaluate the PDF.
+    f: float
+        Fraction of the signal in the total distribution.
+    lam: float
+        The decay constant of the exponential distribution for the background.
+    mu: float
+        The mean of the normal distribution for the signal.
+    sigma: float
+        The standard deviation of the normal distribution for the signal.
+    alpha: float
+        The lower bound of the range of interest.
+    beta: float
+        The upper bound of the range of interest.
+
+    Returns
+    -----------
+    float or array-like
+        Combined PDF value(s) of the signal and background.
     """
     assert(f >= 0 and f <= 1)
     assert(lam > 0)
     assert(alpha > 0)
     assert(beta > 0)
+    assert(beta > alpha)
     assert(sigma > 0)
 
-    # calculates probability of "x in [alpha, beta]" for normal distribution
-    norm_prob = norm.cdf(x=beta, loc=mu, scale=sigma) - norm.cdf(x=alpha, loc=mu, scale=sigma)
-
-    # calculates probability of "x in [alpha, beta]" for exponential decay distribution
-    expon_prob = expon.cdf(x=beta, scale=1/lam) - expon.cdf(x=alpha, scale=1/lam)
-
-    return 1/(f*norm_prob + (1-f)*expon_prob)
-
-##############################
-### add comments/docstrings here
-###############################
-def total_pdf(M, f, lam, mu, sigma, alpha, beta):
-
-    A = normalisation_factor(f, lam, mu, sigma, alpha, beta)
-
-    return A*(f*norm.pdf(x=M, loc=mu, scale=sigma) + (1-f)*expon.pdf(x=beta, scale=1/lam))
+    # Calculate the total PDF as a weighted sum of signal and background PDFs
+    return f * signal_pdf(M, mu, sigma, alpha, beta) + (1 - f) * background_pdf(M, lam, alpha, beta)
