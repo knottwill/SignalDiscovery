@@ -2,9 +2,9 @@
 PDFs
 ----------
 This module contains functions that compute the normalised probability
-density functions within specified ranges of the signal-only PDF, 
+density functions, within specified ranges, of the signal-only PDF, 
 background-only PDF and total PDF (which is a weighted sum of signal 
-and background)
+and background).
 """
 
 from scipy.stats import norm, expon
@@ -13,9 +13,9 @@ def signal_pdf(M, mu, sigma, alpha, beta):
     """
     Signal Probability Density Function
 
-    Computes the normalized probability density function of the
-    signal, described by a normal distribution, within the range 
-    [alpha, beta]
+    Computes the probability density function of the signal, 
+    described by a normal distribution, normalised within the 
+    range [alpha, beta].
 
     Parameters
     -----------
@@ -26,9 +26,9 @@ def signal_pdf(M, mu, sigma, alpha, beta):
     sigma: float
         The standard deviation of the normal distribution.
     alpha: float
-        The lower bound of the range of interest.
+        The lower bound of M.
     beta: float
-        The upper bound of the range of interest.
+        The upper bound of M.
 
     Returns
     ----------
@@ -54,8 +54,8 @@ def background_pdf(M, lam, alpha, beta):
     """
     Background Probability Density Function
 
-    Computes the normalized probability density function of the 
-    background, described by an exponential decay distribution, 
+    Computes the probability density function of the background, 
+    described by an exponential decay distribution, normalised
     within the range [alpha, beta]
 
     Parameters
@@ -65,9 +65,9 @@ def background_pdf(M, lam, alpha, beta):
     lam: float
         The decay constant of the exponential distribution.
     alpha: float
-        The lower bound of the range of interest.
+        The lower bound of M.
     beta: float
-        The upper bound of the range of interest.
+        The upper bound of M.
 
     Returns
     -----------
@@ -108,9 +108,9 @@ def total_pdf(M, f, lam, mu, sigma, alpha, beta):
     sigma: float
         The standard deviation of the normal distribution for the signal.
     alpha: float
-        The lower bound of the range of interest.
+        The lower bound of M.
     beta: float
-        The upper bound of the range of interest.
+        The upper bound of M.
 
     Returns
     -----------
@@ -118,11 +118,6 @@ def total_pdf(M, f, lam, mu, sigma, alpha, beta):
         Combined PDF value(s) of the signal and background.
     """
     assert(f >= 0 and f <= 1)
-    assert(lam > 0)
-    assert(alpha > 0)
-    assert(beta > 0)
-    assert(beta > alpha)
-    assert(sigma > 0)
 
     # Calculate the total PDF as a weighted sum of signal and background PDFs
     return f * signal_pdf(M, mu, sigma, alpha, beta) + (1 - f) * background_pdf(M, lam, alpha, beta)
@@ -135,7 +130,7 @@ def shifted_background_pdf(M, lam, alpha, beta):
     assert(beta > 0)
     assert(beta > alpha)
 
-    # same calculation as before, but expon distribution is shifted
+    # same calculation as above, but expon distribution is shifted to begin at alpha
     total_prob = expon.cdf(x=beta, loc=alpha, scale=1/lam) - expon.cdf(x=alpha, loc=alpha, scale=1/lam)
     normalisation_factor = 1 / total_prob
     return normalisation_factor * expon.pdf(x=M, loc=alpha, scale=1/lam)
