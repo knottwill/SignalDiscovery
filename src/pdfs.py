@@ -126,3 +126,16 @@ def total_pdf(M, f, lam, mu, sigma, alpha, beta):
 
     # Calculate the total PDF as a weighted sum of signal and background PDFs
     return f * signal_pdf(M, mu, sigma, alpha, beta) + (1 - f) * background_pdf(M, lam, alpha, beta)
+
+
+def shifted_background_pdf(M, lam, alpha, beta):
+
+    assert(lam > 0)
+    assert(alpha > 0)
+    assert(beta > 0)
+    assert(beta > alpha)
+
+    # same calculation as before, but expon distribution is shifted
+    total_prob = expon.cdf(x=beta, loc=alpha, scale=1/lam) - expon.cdf(x=alpha, loc=alpha, scale=1/lam)
+    normalisation_factor = 1 / total_prob
+    return normalisation_factor * expon.pdf(x=M, loc=alpha, scale=1/lam)
