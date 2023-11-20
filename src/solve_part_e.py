@@ -1,34 +1,50 @@
 import numpy as np
-import matplotlib.pyplot as plt
+from iminuit import Minuit
+from iminuit.cost import UnbinnedNLL
 from scipy.stats import norm, expon
-import seaborn as sns
-from time import time
 
 # import function to generate data
 from generation import generate_from_total_pdf
 
 # generate 100000 events
 N_events= 100000
-total_events = generate_from_total_pdf(N_events, f=0.1, lam=0.5, mu=5.28, sigma=0.018, alpha=5, beta=5.6)
+dset = generate_from_total_pdf(N_events, f=0.1, lam=0.5, mu=5.28, sigma=0.018, alpha=5, beta=5.6)
 
-# Bin the events
-bins = 50
-bin_counts, bin_edges = np.histogram(total_events, bins=bins)
+###############################################
+# The models imported from pdfs.py were causing errors
+# I redefine the total_pdf as a temporary solution
+# GOTTA GO BACK AND CHANGE THIS
+###############################################
+def model(M, f, lam, mu, sigma):
+    total_prob = norm.cdf(x=5.6, loc=mu, scale=sigma) - norm.cdf(x=5, loc=mu, scale=sigma)
+    signal = f*norm.pdf(x=M, loc=mu, scale=sigma)/total_prob
 
-# Calculate bin midpoints
-midpoints = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+    total_prob = expon.cdf(x=5.6, scale=1/lam) - expon.cdf(x=5, scale=1/lam)
+    background = (1 - f)*expon.pdf(x=M, scale=1/lam)/total_prob
 
-fig, ax = plt.subplots()
+    return signal + background
 
-# Plotting bin count vs midpoints
-ax.plot(midpoints, bin_counts, label='Events generated from Total PDF', marker='o')
+# (unbinned) negative log likelihood as the cost function
+nll = UnbinnedNLL(dset , model)
 
-ax.set_xlabel('M')
-ax.set_ylabel('Bin Count')
-ax.set_title(f'{N_events} total events')
+# Minimisation object
+# Passing random starting values for the parameters
+alpha, beta = 5, 5.6
+mi = Minuit(
+    fcn = nll,
+    f = np.random.uniform(0,1),
+    lam = np.random.uniform(0,2),
+    mu = np.random.uniform(alpha, beta),
+    sigma = np.random.uniform(0.1,0.7),
+)
 
-ax.legend()
+# Minimise the cost function
+mi.migrad()
 
-fig.savefig('plots/part_e.png')
+# Hesse algorithm
+mi.hesse()
+
+# print the fit result
+print(mi)
 
 
