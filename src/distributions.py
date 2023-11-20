@@ -134,3 +134,46 @@ def shifted_background_pdf(M, lam, alpha, beta):
     total_prob = expon.cdf(x=beta, loc=alpha, scale=1/lam) - expon.cdf(x=alpha, loc=alpha, scale=1/lam)
     normalisation_factor = 1 / total_prob
     return normalisation_factor * expon.pdf(x=M, loc=alpha, scale=1/lam)
+
+def signal_model(M, mu, sigma):
+    """
+    For minimisation using iminuit, we can't have alpha and beta be parameters
+    We also can't have assert statements
+    """
+    alpha = 5
+    beta = 5.6
+
+    total_prob = norm.cdf(x=beta, loc=mu, scale=sigma) - norm.cdf(x=alpha, loc=mu, scale=sigma)
+    normalisation_factor = 1 / total_prob
+    return normalisation_factor * norm.pdf(x=M, loc=mu, scale=sigma)
+    
+
+def background_model(M, lam):
+    """
+    """
+    alpha = 5
+    beta = 5.6
+
+    total_prob = expon.cdf(x=beta, scale=1/lam) - expon.cdf(x=alpha, scale=1/lam)
+    normalisation_factor = 1 / total_prob
+    return normalisation_factor * expon.pdf(x=M, scale=1/lam)
+
+
+def total_model(M, f, lam, mu, sigma):
+    """
+    """
+
+    return f * signal_model(M, mu, sigma) + (1 - f) * background_model(M, lam)
+
+def total_cdf(M, f, lam, mu, sigma):
+    alpha = 5
+    beta = 5.6
+
+    # normalisation factors for the signal and background distributions
+    signal_factor = 1/(norm.cdf(x=beta, loc=mu, scale=sigma) - norm.cdf(x=alpha, loc=mu, scale=sigma))
+    background_factor = 1/(expon.cdf(x=beta, scale=1/lam) - expon.cdf(x=alpha, scale=1/lam))
+
+    signal_cdf = signal_factor*(norm.cdf(x=M, loc=mu, scale=sigma) - norm.cdf(x=alpha, loc=mu, scale=sigma))
+    background_cdf = background_factor*(expon.cdf(x=M, scale=1/lam) - expon.cdf(x=alpha, scale=1/lam))
+
+    return f*signal_cdf + (1-f)*background_cdf

@@ -3,7 +3,7 @@ from scipy.integrate import quad
 from pytest import approx
 
 # Import the total pdf
-from pdfs import total_pdf
+from distributions import total_pdf
 
 # Define upper and lower bounds
 alpha = 5
