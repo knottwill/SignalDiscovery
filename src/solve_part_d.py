@@ -14,6 +14,13 @@ lam = 0.5
 mu = 5.28  
 sigma = 0.018 
 
+assert(alpha > 0)
+assert(beta > 0)
+assert(beta > alpha)
+assert(sigma > 0)
+assert(lam > 0)
+assert(f >= 0 and f <= 1)
+
 # Generate values of M in [alpha, beta]
 M_values = np.linspace(alpha, beta, 1000)
 

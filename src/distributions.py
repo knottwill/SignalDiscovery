@@ -102,9 +102,6 @@ def total_pdf(M, f, lam, mu, sigma):
     float or array-like
         Combined PDF value(s) of the signal and background.
     """
-    # upper and lower bound of M
-    alpha = 5
-    beta = 5.6
 
     # Calculate the total PDF as a weighted sum of signal and background PDFs
     return f * signal_pdf(M, mu, sigma) + (1 - f) * background_pdf(M, lam)
@@ -121,3 +118,7 @@ def total_cdf(M, f, lam, mu, sigma):
     background_cdf = background_factor*(expon.cdf(x=M, scale=1/lam) - expon.cdf(x=alpha, scale=1/lam))
 
     return f*signal_cdf + (1-f)*background_cdf
+
+def two_signals_pdf(M, f1=0.1, f2=0.05, lam=0.5, mu1=5.28, mu2=5.35, sigma=0.018):
+
+    return f1*signal_pdf(M, mu1, sigma) + f2*signal_pdf(M, mu2, sigma) + (1-f1-f2)*background_pdf(M, lam)
