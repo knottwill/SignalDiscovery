@@ -22,14 +22,14 @@ for _ in range(N_combos):
     sigma = np.random.uniform(0.1,0.7)
 
     # Performs integration of total PDF over [5,5.6] given the generated parameters
-    total_probability, error = quad(total_pdf, alpha, beta, args=(f, lam, mu, sigma, alpha, beta))
+    total_probability, error = quad(total_pdf, alpha, beta, args=(f, lam, mu, sigma))
 
     # testing whether the total_probability is approximately 1
     # with a relative tolerance of 1e-6 (using pytest.approx)
     relative_tolerance = 1e-6
     if total_probability != approx(1, rel=relative_tolerance):
 
-        print(f'Params: alpha = {alpha:.4}, beta = {beta:.4}, f = {f:.4}, lambda = {lam:.4}, mu = {mu:.4}, sigma = {sigma:.4}')
+        print(f'Params: f = {f:.4}, lambda = {lam:.4}, mu = {mu:.4}, sigma = {sigma:.4}')
         print('Total Probability: {total_probability}')
 
         integrates_to_unity=False # failed

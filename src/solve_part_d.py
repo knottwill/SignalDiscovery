@@ -18,9 +18,9 @@ sigma = 0.018
 M_values = np.linspace(alpha, beta, 1000)
 
 # Evaluate pdfs at all M_values
-pdf_signal = signal_pdf(M_values, mu, sigma, alpha, beta)
-pdf_background = background_pdf(M_values, lam, alpha, beta)
-pdf_total = total_pdf(M_values, f, lam, mu, sigma, alpha, beta)
+pdf_signal = signal_pdf(M_values, mu, sigma)
+pdf_background = background_pdf(M_values, lam)
+pdf_total = total_pdf(M_values, f, lam, mu, sigma)
 
 # Add weightings to signal and background
 signal_only = f*pdf_signal
