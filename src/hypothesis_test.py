@@ -5,7 +5,7 @@ from iminuit import Minuit
 from iminuit.cost import BinnedNLL
 from pytest import approx 
 
-def NP_test(dataset, cdf, starting_params: dict, plot=False):
+def NP_test(dataset, cdf, starting_params: dict, return_plot_variables=False):
     """
     Perform Neyman-Pearson Hypothesis test
 
@@ -90,5 +90,8 @@ def NP_test(dataset, cdf, starting_params: dict, plot=False):
         discovery = True
     else:
         discovery = False
+
+    if return_plot_variables:
+        return (bin_density, midpoints, h0_params, h1_params), discovery, Z, p_value
 
     return discovery, Z, p_value
