@@ -1,8 +1,9 @@
 import numpy as np
-from scipy.stats import chi2
+import matplotlib.pyplot as plt
+from scipy.stats import chi2, norm
 from iminuit import Minuit
-from iminuit.cost import UnbinnedNLL, BinnedNLL
-
+from iminuit.cost import BinnedNLL
+from pytest import approx 
 
 def NP_test(dataset, cdf, starting_params: dict, plot=False):
     """
@@ -15,7 +16,7 @@ def NP_test(dataset, cdf, starting_params: dict, plot=False):
     """
 
     # square root rule for number of bins
-    bins = np.sqrt(len(dataset))
+    bins = int(np.sqrt(len(dataset)))
     
     # Bin the dataset
     bin_density, bin_edges = np.histogram(dataset, bins=bins, density=True)
@@ -66,10 +67,6 @@ def NP_test(dataset, cdf, starting_params: dict, plot=False):
     h0_nll = mi.fval
 
     print(mi)
-
-    ###########################
-    # Optional Plot
-    ###########################
 
     ############################
     # Perform Neyman-Pearson Test
