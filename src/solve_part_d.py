@@ -17,7 +17,7 @@ sigma = 0.018
 # Generate values of M in [alpha, beta]
 M_values = np.linspace(alpha, beta, 1000)
 
-# Evaluate pdfs at 
+# Evaluate pdfs at all M_values
 pdf_signal = signal_pdf(M_values, mu, sigma, alpha, beta)
 pdf_background = background_pdf(M_values, lam, alpha, beta)
 pdf_total = total_pdf(M_values, f, lam, mu, sigma, alpha, beta)
@@ -36,6 +36,7 @@ assert( np.all(pdf_total == signal_only + background_only) )
 fig, axs = plt.subplots(2, 1, figsize=(10, 12))  # Creates a figure with two subplots
 
 # First Plot - signal and background have weights applied
+# such that we can visually see: total = signal + background
 axs[0].plot(M_values, pdf_total, label='Total Probability Distribution')
 axs[0].plot(M_values, signal_only, label=f'Signal Only (with {f} weighting)', linestyle=':')
 axs[0].plot(M_values, background_only, label=f'Background Only (with {1-f} weighting)', linestyle='--')
@@ -47,13 +48,14 @@ axs[0].legend()
 axs[0].grid(True)
 
 # Second Plot - signal and background are normalised PDFs
+# such that all distributions are properly normalised PDFs (integrate to unity)
 axs[1].plot(M_values, pdf_total, label='Total Probability Distribution')
 axs[1].plot(M_values, pdf_signal, label='Signal PDF (Normalized)', linestyle=':')
 axs[1].plot(M_values, pdf_background, label='Background PDF (Normalized)', linestyle='--')
 
 axs[1].set_xlabel('M')
 axs[1].set_ylabel('Probability Density')
-axs[1].set_title('Comparison of Probability Distributions (Normalized)')
+axs[1].set_title('Comparison of Properly Normalized PDFs')
 axs[1].legend()
 axs[1].grid(True)
 

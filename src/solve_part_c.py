@@ -2,8 +2,8 @@ import numpy as np
 from scipy.integrate import quad
 from pytest import approx
 
-# Import the pdfs
-from pdfs import signal_pdf, background_pdf, total_pdf
+# Import the total pdf
+from pdfs import total_pdf
 
 # Define upper and lower bounds
 alpha = 5
