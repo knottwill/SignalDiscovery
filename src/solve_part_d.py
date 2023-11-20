@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # import pdfs
-from pdfs import signal_pdf, background_pdf, total_pdf
+from distributions import signal_pdf, background_pdf, total_pdf
 
 # Upper & lower bounds
 alpha = 5
