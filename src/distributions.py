@@ -119,6 +119,6 @@ def total_cdf(M, f, lam, mu, sigma):
 
     return f*signal_cdf + (1-f)*background_cdf
 
-def two_signals_pdf(M, f1=0.1, f2=0.05, lam=0.5, mu1=5.28, mu2=5.35, sigma=0.018):
+def two_signal_pdf(M, f1=0.1, f2=0.05, lam=0.5, mu1=5.28, mu2=5.35, sigma=0.018):
 
     return f1*signal_pdf(M, mu1, sigma) + f2*signal_pdf(M, mu2, sigma) + (1-f1-f2)*background_pdf(M, lam)

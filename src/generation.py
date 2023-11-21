@@ -7,7 +7,7 @@ import numpy as np
 from scipy.stats import norm, expon
 from time import process_time
 
-def generate_from_total_pdf(N_events, f=0.1, lam=0.5, mu=5.28, sigma=0.018, alpha=5, beta=5.6, print_timings=False):
+def generate_from_total_pdf(N_events, f=0.1, lam=0.5, mu=5.28, sigma=0.018, print_timings=False):
     """
     Inverse CDF method to generate data from the total PDF
 
@@ -22,6 +22,10 @@ def generate_from_total_pdf(N_events, f=0.1, lam=0.5, mu=5.28, sigma=0.018, alph
     # evaulating the CDFs at alpha and beta
     ########################
     """
+
+    # upper & lower bounds of M
+    alpha = 5
+    beta = 5.6
 
     # Randomly select the number of signal events and background events
     # to generate, according to the weighting f
@@ -49,6 +53,55 @@ def generate_from_total_pdf(N_events, f=0.1, lam=0.5, mu=5.28, sigma=0.018, alph
 
     # Total events is just the union of signal and background events
     total_events = np.concatenate((signal_events, background_events))
+
+    # Print time
+    stop = process_time()
+    if print_timings:
+        print(f'Generated {N_events} events in {stop-start:.4}s')
+
+    return total_events
+
+def generate_from_two_signal_pdf(N_events, f1=0.1, f2=0.05, lam=0.5, mu1=5.28, mu2=5.35, sigma=0.018, print_timings=False):
+    """
+    Inverse CDF method to generate data from the combined PDF of two signals and background
+    """
+
+    # upper & lower bounds of M
+    alpha = 5
+    beta = 5.6
+
+    # Randomly select the number of signal events and background events
+    # to generate, according to the weighting f
+    g = np.random.uniform(0,1, N_events)
+    N_s1 = np.count_nonzero(g <= f1)
+    N_s2 = np.count_nonzero(f1 < g <= f1+f2)
+    N_background = np.count_nonzero(g > f1+f2)
+
+    # Finding lower and upper bounds of the probabilities
+    lower_p_s1 = norm.cdf(alpha, loc=mu1, scale=sigma)
+    upper_p_s1 = norm.cdf(beta, loc=mu1, scale=sigma)
+    lower_p_s2 = norm.cdf(alpha, loc=mu2, scale=sigma)
+    upper_p_s2 = norm.cdf(beta, loc=mu2, scale=sigma)
+    lower_p_background = expon.cdf(alpha, scale=1/lam)
+    upper_p_background = expon.cdf(beta, scale=1/lam)
+
+    # Measure time to generate data
+    start = process_time()
+
+    # Generating s1 events using percentage point function
+    probs = np.random.uniform(lower_p_s1, upper_p_s1, N_s1)
+    s1_events = norm.ppf(q=probs, loc=mu1, scale=sigma)
+
+    # Generating s2 events using percentage point function
+    probs = np.random.uniform(lower_p_s2, upper_p_s2, N_s2)
+    s2_events = norm.ppf(q=probs, loc=mu2, scale=sigma)
+
+    # Generating background events using percentage point function
+    probs = np.random.uniform(lower_p_background, upper_p_background, N_background)
+    background_events = expon.ppf(q=probs, scale=1/lam)
+
+    # Total events is just the union of signal and background events
+    total_events = np.concatenate((s1_events, s2_events, background_events))
 
     # Print time
     stop = process_time()
