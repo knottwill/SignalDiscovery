@@ -7,7 +7,7 @@ import numpy as np
 from scipy.stats import norm, expon
 from time import process_time
 
-def generate_from_total_pdf(N_events, f=0.1, lam=0.5, mu=5.28, sigma=0.018, print_timings=False):
+def generate_from_total_pdf(N_events, print_timings=False, f=0.1, lam=0.5, mu=5.28, sigma=0.018):
     """
     Inverse CDF method to generate data from the total PDF
 
@@ -61,7 +61,7 @@ def generate_from_total_pdf(N_events, f=0.1, lam=0.5, mu=5.28, sigma=0.018, prin
 
     return total_events
 
-def generate_from_two_signal_pdf(N_events, f1=0.1, f2=0.05, lam=0.5, mu1=5.28, mu2=5.35, sigma=0.018, print_timings=False):
+def generate_from_two_signal_pdf(N_events, print_timings=False, f1=0.1, f2=0.05, lam=0.5, mu1=5.28, mu2=5.35, sigma=0.018):
     """
     Inverse CDF method to generate data from the combined PDF of two signals and background
     """
@@ -100,7 +100,7 @@ def generate_from_two_signal_pdf(N_events, f1=0.1, f2=0.05, lam=0.5, mu1=5.28, m
     probs = np.random.uniform(lower_p_background, upper_p_background, N_background)
     background_events = expon.ppf(q=probs, scale=1/lam)
 
-    # Total events is just the union of signal and background events
+    # Total events is just the union of all events
     total_events = np.concatenate((s1_events, s2_events, background_events))
 
     # Print time

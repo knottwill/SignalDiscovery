@@ -74,7 +74,7 @@ def signal_background_test(dataset, cdf, starting_params: dict, print_fitting_re
     # Perform Neyman-Pearson Test
     ###########################
 
-    T = 2*(h0_nll - h1_nll) # test statistic
+    T = h0_nll - h1_nll # test statistic
     k = 1               # degrees of freedom
 
     # Calculate p value
@@ -105,9 +105,12 @@ def signal_background_test(dataset, cdf, starting_params: dict, print_fitting_re
 
     return discovery, Z, p_value
 
+
 def two_signal_test(dataset, cdf, starting_params: dict, return_variabled_for_plotting=False):
     """
     Perform Neyman-Pearson Hypothesis test for the existance of two distinct signals
+
+    Null hypothesis is just 1 signal. Alternate is 2 signals
     """
 
     # square root rule for number of bins
