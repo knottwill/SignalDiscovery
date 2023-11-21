@@ -43,7 +43,10 @@ for param in true_params:
     starting_params[param] = float(f'{starting_params[param]:.4}')
 
 # ---------------
-# Minimisation Object
+# Creating Minimisation Object
+# Set constraints to parameters 
+# Some are physical constaints (eg. sigma > 0) 
+# Some are just sensible constraints
 # ---------------
 
 # import our total PDF
@@ -55,11 +58,7 @@ nll = UnbinnedNLL(dataset, total_pdf)
 # Minimisation object
 mi = Minuit(nll, **starting_params)
 
-# ---------------
-# Setting constraints to parameters 
-# some are physical constaints (eg. sigma > 0) 
-# some are just sensible constraints
-# ---------------
+# Setting constraints
 mi.limits['f'] = (0, 1) # fraction of signal is between 0 and 1
 mi.limits['lam'] = (0, None) # lambda cannot be negative (otherwise there is no 'decay')
 mi.limits['sigma'] = (0, (beta-alpha)/2) # sigma should not be too wide, and cannot be negative

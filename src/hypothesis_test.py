@@ -14,6 +14,9 @@ def signal_background_test(dataset, cdf, starting_params: dict, print_fitting_re
     - test statistic is chi2 distributed with 1 dof
     - its a one-sided test, hence Z = np.sqrt(chi2.ppf(1 - 2*p_value,1))
     """
+    # upper and lower bounds
+    alpha = 5
+    beta = 5.6
 
     # square root rule for number of bins
     bins = int(np.sqrt(len(dataset)))
@@ -24,19 +27,38 @@ def signal_background_test(dataset, cdf, starting_params: dict, print_fitting_re
     # Calculate bin midpoints
     midpoints = 0.5 * (bin_edges[:-1] + bin_edges[1:])
 
+    # --------------------
+    # Minimisation object
+    # --------------------
+
     # Cost function is binned negative log likelihood
     binned_nll = BinnedNLL(bin_density, bin_edges, cdf)
 
     # Minimisation object
     mi = Minuit(binned_nll, **starting_params)
 
-    #####################################
+    # Setting constraints
+    mi.limits['f'] = (0, 1) # fraction of signal is between 0 and 1
+    mi.limits['lam'] = (0, None) # lambda cannot be negative (otherwise there is no 'decay')
+    mi.limits['sigma'] = (0, (beta-alpha)/2) # sigma should not be too wide, and cannot be negative
+    mi.limits['mu'] = (alpha, beta) # the signal should not peak outside of [alpha, beta]
+
+    # ---------------------------
     # Run the fit for the alternate hypothesis
-    #####################################
+    # ---------------------------
 
     # Run minimisation and Hesse algorithm
     mi.migrad()
     mi.hesse()
+
+    # If valid minimum is not found, print message
+    h1_valid = mi.valid
+    if not(h1_valid):
+        print('#---------------')
+        print('Warning: valid minimum NOT FOUND')
+        print('#---------------')
+        print(mi)
+        return 'h1 invalid', 0, 0 # don't continue with test
 
     # Parameter values for total model fit
     h1_params = list(mi.values)
@@ -47,9 +69,9 @@ def signal_background_test(dataset, cdf, starting_params: dict, print_fitting_re
     if print_fitting_results:
         print(mi)
 
-    #####################################
+    # ---------------------------
     # Run the fit for the null hypothesis
-    #####################################
+    # ---------------------------
 
     # Set parameters such that we fit background-only model
     mi.values['f'] = 0
@@ -61,6 +83,15 @@ def signal_background_test(dataset, cdf, starting_params: dict, print_fitting_re
     mi.migrad()
     mi.hesse()
 
+    # If valid minimum is not found, print message
+    h0_valid = mi.valid
+    if not(h0_valid):
+        print('#---------------')
+        print('Warning: valid minimum NOT FOUND')
+        print('#---------------')
+        print(mi)
+        return 'h0 invalid', 0, 0 # don't continue with test
+
     # Parameter values for background-only fit
     h0_params = list(mi.values)
 
@@ -70,9 +101,9 @@ def signal_background_test(dataset, cdf, starting_params: dict, print_fitting_re
     if print_fitting_results:
         print(mi)
 
-    ############################
+    # ---------------------------
     # Perform Neyman-Pearson Test
-    ###########################
+    # ---------------------------
 
     T = h0_nll - h1_nll # test statistic
     k = 1               # degrees of freedom
