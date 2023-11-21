@@ -12,7 +12,7 @@ def generate_from_total_pdf(N_events, f=0.1, lam=0.5, mu=5.28, sigma=0.018, alph
     Inverse CDF method to generate data from the total PDF
 
     Finish docstring. talk about:
-    - generating f*N_events signal events and (1-f)*N_events background events
+    - randomly selecting between signal or background to generate from
     - why this is the same as generating N_events total PDF events
     - How the inverse CDF is called the percentage point function, ppf
 
@@ -23,11 +23,14 @@ def generate_from_total_pdf(N_events, f=0.1, lam=0.5, mu=5.28, sigma=0.018, alph
     ########################
     """
 
-    # number of (signal and background) events
-    N_signal_events = int( N_events*f )
-    N_background_events = int( N_events*(1-f) )
+    # Randomly select the number of signal events and background events
+    # to generate, according to the weighting f
+    g = np.random.uniform(0,1, N_events)
+    N_background_events = np.count_nonzero(g > f)
+    N_signal_events = np.count_nonzero(g <= f)
 
-    # Finding lower and upper bounds of the probabilities to input into ppf
+    # Finding lower and upper bounds of the probabilities to input into 
+    # the norm and expon ppfs
     lower_p_signal = norm.cdf(alpha, loc=mu, scale=sigma)
     upper_p_signal = norm.cdf(beta, loc=mu, scale=sigma)
     lower_p_background = expon.cdf(alpha, scale=1/lam)
