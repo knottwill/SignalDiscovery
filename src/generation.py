@@ -7,7 +7,7 @@ import numpy as np
 from scipy.stats import norm, expon
 from time import process_time
 
-def generate_from_total_pdf(N_events, f=0.1, lam=0.5, mu=5.28, sigma=0.018, alpha=5, beta=5.6):
+def generate_from_total_pdf(N_events, f=0.1, lam=0.5, mu=5.28, sigma=0.018, alpha=5, beta=5.6, print_timings=False):
     """
     Inverse CDF method to generate data from the total PDF
 
@@ -52,6 +52,7 @@ def generate_from_total_pdf(N_events, f=0.1, lam=0.5, mu=5.28, sigma=0.018, alph
 
     # Print time
     stop = process_time()
-    print(f'Generated {N_events} events in {stop-start:.4}s')
+    if print_timings:
+        print(f'Generated {N_events} events in {stop-start:.4}s')
 
     return total_events
