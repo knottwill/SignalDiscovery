@@ -97,7 +97,7 @@ def signal_background_test(dataset, pdf, cdf, starting_params, binned=False, plo
 
     # Setting constraints
     mi.limits['f'] = (0, 1) # fraction of signal is between 0 and 1
-    mi.limits['lam'] = (0, None) # lambda cannot be negative (otherwise there is no 'decay')
+    mi.limits['lam'] = (0, 2) # lambda cannot be negative (otherwise there is no 'decay')
     mi.limits['sigma'] = (0, (beta-alpha)/2) # sigma should not be too wide, and cannot be negative
     mi.limits['mu'] = (alpha, beta) # the signal should not peak outside of [alpha, beta]
 
@@ -161,7 +161,6 @@ def signal_background_test(dataset, pdf, cdf, starting_params, binned=False, plo
 
     # Neyman-Pearson Test statistic
     T = h0_nll - h1_nll
-    print(f'T: {T}')
 
     Z, p_value = neyman_pearson_test(T)
 
@@ -210,7 +209,7 @@ def two_signal_test(dataset, pdf, cdf, starting_params, binned=False, plot=False
     mi.limits['f2'] = (0, 0.5)
     mi.limits['mu1'] = (5, 5.6) # the signal should not peak outside of [alpha, beta]
     mi.limits['mu2'] = (5, 5.6)
-    mi.limits['lam'] = (0, None) # lambda cannot be negative (otherwise there is no 'decay')
+    mi.limits['lam'] = (0, 2) # lambda cannot be negative (otherwise there is no 'decay')
     mi.limits['sigma'] = (0, 0.3) # sigma should not be too wide, and cannot be negative
 
     # ---------------------------
@@ -254,7 +253,7 @@ def two_signal_test(dataset, pdf, cdf, starting_params, binned=False, plot=False
 
     # Negative log likelihood for the dataset given the alternate hypothesis 
     h0_nll = mi.fval
-    
+
     # ---------------------------
     # Perform Neyman-Pearson Test
     # ---------------------------

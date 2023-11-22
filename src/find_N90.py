@@ -52,7 +52,7 @@ def plot_NP(N, P, P_err, P_pred, filepath=False):
 def goodness_of_fit(pull):
 
     chisq = np.sum( pull**2 )
-    ndof = len(N) - 4 # number of degrees of freedom
+    ndof = len(pull) - 4 # number of degrees of freedom
     p_value = 1 - chi2.cdf(chisq, ndof)
 
     # --------------
@@ -104,3 +104,5 @@ def find_N90(N, P, P_err, plot_filepath=False):
     # ------------------
     # Find N_90
     # ------------------
+
+    
