@@ -5,13 +5,16 @@ from iminuit import Minuit
 from iminuit.cost import UnbinnedNLL, BinnedNLL
 from pytest import approx 
 
-def neyman_pearson_test(h0_nll, h1_nll):
+def NLL(dataset, pdf, params):
+    return -2*np.sum(np.log(pdf(dataset, *params)))
+
+def neyman_pearson_test(T):
     # ---------------------------
     # Perform Neyman-Pearson Test
+    # using test statistic
     # ---------------------------
 
-    T = h0_nll - h1_nll # test statistic
-    k = 1               # degrees of freedom
+    k = 1 # degrees of freedom
 
     # Calculate p value
     p_value = 1 - chi2.cdf(T, k) 
@@ -80,9 +83,6 @@ def signal_background_test(dataset, pdf, cdf, starting_params, binned=False, plo
         
         # Bin the dataset
         bin_density, bin_edges = np.histogram(dataset, bins=bins, density=True)
-
-        # Calculate bin midpoints
-        midpoints = 0.5 * (bin_edges[:-1] + bin_edges[1:])
 
         # Cost function is binned negative log likelihood
         nll = BinnedNLL(bin_density, bin_edges, cdf)
@@ -153,8 +153,17 @@ def signal_background_test(dataset, pdf, cdf, starting_params, binned=False, plo
     # Perform Neyman-Pearson Test
     # ---------------------------
 
-    print(f'h0_nll: {h0_nll}, h1_nll: {h1_nll}')
-    Z, p_value = neyman_pearson_test(h0_nll, h1_nll)
+    # If we performed a binned fit, we still want to use 
+    # the full dataset to calculate the negative log likelihood (more information)
+    if binned:
+        h0_nll = NLL(dataset, pdf, h0_params)
+        h1_nll = NLL(dataset, pdf, h1_params)
+
+    # Neyman-Pearson Test statistic
+    T = h0_nll - h1_nll
+    print(f'T: {T}')
+
+    Z, p_value = neyman_pearson_test(T)
 
     # If we get a significance greater than 5, we have 'discovered' the signal
     if Z >= 5:
@@ -245,12 +254,22 @@ def two_signal_test(dataset, pdf, cdf, starting_params, binned=False, plot=False
 
     # Negative log likelihood for the dataset given the alternate hypothesis 
     h0_nll = mi.fval
-
+    
     # ---------------------------
     # Perform Neyman-Pearson Test
     # ---------------------------
 
-    Z, p_value = neyman_pearson_test(h0_nll, h1_nll)
+    # If we performed a binned fit, we still want to use 
+    # the full dataset to calculate the negative log likelihood (more information)
+    if binned:
+        h0_nll = NLL(dataset, pdf, h0_params)
+        h1_nll = NLL(dataset, pdf, h1_params)
+
+    # Neyman-Pearson Test statistic
+    T = h0_nll - h1_nll
+    print(f'T: {T}')
+
+    Z, p_value = neyman_pearson_test(T)
 
     # If we get a significance greater than 5, we have 'discovered' the signal
     if Z >= 5:

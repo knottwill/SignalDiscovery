@@ -74,7 +74,7 @@ def generate_from_two_signal_pdf(N_events, print_timings=False, f1=0.1, f2=0.05,
     # to generate, according to the weighting f
     g = np.random.uniform(0,1, N_events)
     N_s1 = np.count_nonzero(g <= f1)
-    N_s2 = np.count_nonzero(f1 < g <= f1+f2)
+    N_s2 = np.count_nonzero((f1 < g) & (g <= f1 + f2))
     N_background = np.count_nonzero(g > f1+f2)
 
     # Finding lower and upper bounds of the probabilities
