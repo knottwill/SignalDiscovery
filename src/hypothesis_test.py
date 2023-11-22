@@ -32,7 +32,32 @@ def neyman_pearson_test(h0_nll, h1_nll):
 
     return Z, p_value
 
-def signal_background_test(dataset, pdf, cdf, starting_params: dict, binned=False, print_fitting_results=False, return_variables_for_plotting=False):
+def plotting(dataset, pdf, h0_params, h1_params):
+    # square root rule for number of bins
+    bins = int(np.sqrt(len(dataset)))
+
+    # Bin the dataset
+    bin_density, bin_edges = np.histogram(dataset, bins=bins, density=True)
+
+    # Calculate bin midpoints
+    midpoints = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+
+    fig, ax = plt.subplots()
+
+    # Plotting bin count vs midpoints
+    x = np.linspace(5, 5.6, 1000)
+    ax.scatter(midpoints, bin_density, label='Dataset', marker='o')
+    # ax.plot(midpoints, total_model(midpoints, **true_params), label='True model', color='red')
+    ax.plot(x, pdf(x, *h0_params), label='H0', color='red')
+    ax.plot(x, pdf(x, *h1_params), label='H1', color='orange')
+
+    ax.set_xlabel('M')
+    ax.set_ylabel('Bin Density')
+    ax.legend()
+
+    return fig
+
+def signal_background_test(dataset, pdf, cdf, starting_params, binned=False, plot=False):
     """
     Perform Neyman-Pearson Hypothesis test for the existance of a signal
 
@@ -45,24 +70,20 @@ def signal_background_test(dataset, pdf, cdf, starting_params: dict, binned=Fals
     alpha = 5
     beta = 5.6
 
-    # --------------------
-    # Binning
-    # --------------------
-
-    # square root rule for number of bins
-    bins = int(np.sqrt(len(dataset)))
-    
-    # Bin the dataset
-    bin_density, bin_edges = np.histogram(dataset, bins=bins, density=True)
-
-    # Calculate bin midpoints
-    midpoints = 0.5 * (bin_edges[:-1] + bin_edges[1:])
-
      # --------------------
     # Minimisation object
     # --------------------
 
     if binned:
+            # square root rule for number of bins
+        bins = int(np.sqrt(len(dataset)))
+        
+        # Bin the dataset
+        bin_density, bin_edges = np.histogram(dataset, bins=bins, density=True)
+
+        # Calculate bin midpoints
+        midpoints = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+
         # Cost function is binned negative log likelihood
         nll = BinnedNLL(bin_density, bin_edges, cdf)
 
@@ -101,9 +122,6 @@ def signal_background_test(dataset, pdf, cdf, starting_params: dict, binned=Fals
     # Negative log likelihood for the dataset given the alternate hypothesis 
     h1_nll = mi.fval
 
-    if print_fitting_results:
-        print(mi)
-
     # ---------------------------
     # Run the fit for the null hypothesis
     # ---------------------------
@@ -131,13 +149,11 @@ def signal_background_test(dataset, pdf, cdf, starting_params: dict, binned=Fals
     # negative log likelihood for the dataset given the null hypothesis 
     h0_nll = mi.fval
 
-    if print_fitting_results:
-        print(mi)
-
     # ---------------------------
     # Perform Neyman-Pearson Test
     # ---------------------------
 
+    print(f'h0_nll: {h0_nll}, h1_nll: {h1_nll}')
     Z, p_value = neyman_pearson_test(h0_nll, h1_nll)
 
     # If we get a significance greater than 5, we have 'discovered' the signal
@@ -146,13 +162,14 @@ def signal_background_test(dataset, pdf, cdf, starting_params: dict, binned=Fals
     else:
         discovery = False
 
-    if return_variables_for_plotting:
-        return (bin_density, midpoints, h0_params, h1_params), discovery, Z, p_value
+    if plot:
+        fig = plotting(dataset, pdf, h0_params, h1_params)
+        return fig, discovery, Z, p_value
 
     return discovery, Z, p_value
 
 
-def two_signal_test(dataset, pdf, starting_params):
+def two_signal_test(dataset, pdf, cdf, starting_params, binned=False, plot=False):
     """
     Perform Neyman-Pearson Hypothesis test for the existance of two distinct signals
 
@@ -162,8 +179,22 @@ def two_signal_test(dataset, pdf, starting_params):
     # --------------------
     # Minimisation object
     # --------------------
-    nll = UnbinnedNLL(dataset, pdf)
-    mi = Minuit(nll, **starting_params)
+    if binned:
+        
+        # Bin the dataset
+        bins = int(np.sqrt(len(dataset))) # square root rule for number of bins
+        bin_density, bin_edges = np.histogram(dataset, bins=bins, density=True)
+
+        # Cost function is binned negative log likelihood
+        nll = BinnedNLL(bin_density, bin_edges, cdf)
+
+        # Minimisation object
+        mi = Minuit(nll, **starting_params)
+
+    else:
+        # Cost function as unbinned negative log likelihood
+        nll = UnbinnedNLL(dataset, pdf)
+        mi = Minuit(nll, **starting_params)
 
     # Setting constraints
     mi.limits['f1'] = (0, 0.5)
@@ -226,5 +257,9 @@ def two_signal_test(dataset, pdf, starting_params):
         discovery = True
     else:
         discovery = False
+
+    if plot:
+        fig = plotting(dataset, pdf, h0_params, h1_params)
+        return fig, discovery, Z, p_value
 
     return discovery, Z, p_value
