@@ -152,12 +152,79 @@ def signal_background_test(dataset, pdf, cdf, starting_params: dict, binned=Fals
     return discovery, Z, p_value
 
 
-def two_signal_test(dataset, cdf, starting_params: dict, return_variabled_for_plotting=False):
+def two_signal_test(dataset, pdf, starting_params):
     """
     Perform Neyman-Pearson Hypothesis test for the existance of two distinct signals
 
     Null hypothesis is just 1 signal. Alternate is 2 signals
     """
 
-    # square root rule for number of bins
-    bins = int(np.sqrt(len(dataset)))
+    # --------------------
+    # Minimisation object
+    # --------------------
+    nll = UnbinnedNLL(dataset, pdf)
+    mi = Minuit(nll, **starting_params)
+
+    # Setting constraints
+    mi.limits['f1'] = (0, 0.5)
+    mi.limits['f2'] = (0, 0.5)
+    mi.limits['mu1'] = (5, 5.6) # the signal should not peak outside of [alpha, beta]
+    mi.limits['mu2'] = (5, 5.6)
+    mi.limits['lam'] = (0, None) # lambda cannot be negative (otherwise there is no 'decay')
+    mi.limits['sigma'] = (0, 0.3) # sigma should not be too wide, and cannot be negative
+
+    # ---------------------------
+    # Run the fit for the alternate hypothesis
+    # ---------------------------
+
+    mi.migrad()
+    mi.hesse()
+
+    # If valid minimum is not found, print message
+    h1_valid = mi.valid
+    if not(h1_valid):
+        print('Warning: valid minimum NOT FOUND for H1')
+        print(mi)
+        return 'invalid minimum', 0, 0 # don't continue with test
+
+    h1_params = list(mi.values)
+
+    # Negative log likelihood for the dataset given the alternate hypothesis 
+    h1_nll = mi.fval
+
+    # ---------------------------
+    # Run the fit for the null hypothesis
+    # ---------------------------
+    mi.values['f2'] = 0
+    mi.fixed['f2'] = True
+    mi.fixed['mu2'] = True
+
+    mi.migrad()
+    mi.hesse()
+
+    # If valid minimum is not found, print message
+    h0_valid = mi.valid
+    if not(h0_valid):
+        print('Warning: valid minimum NOT FOUND for H0')
+        print(mi)
+        return 'invalid minimum', 0, 0 # don't continue with test
+
+    # Parameter values for total model fit
+    h0_params = list(mi.values)
+
+    # Negative log likelihood for the dataset given the alternate hypothesis 
+    h0_nll = mi.fval
+
+    # ---------------------------
+    # Perform Neyman-Pearson Test
+    # ---------------------------
+
+    Z, p_value = neyman_pearson_test(h0_nll, h1_nll)
+
+    # If we get a significance greater than 5, we have 'discovered' the signal
+    if Z >= 5:
+        discovery = True
+    else:
+        discovery = False
+
+    return discovery, Z, p_value

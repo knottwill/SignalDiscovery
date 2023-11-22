@@ -49,6 +49,20 @@ def plot_NP(N, P, P_err, P_pred, filepath=False):
         fig.savefig(filepath)
 
 
+def goodness_of_fit(pull):
+
+    chisq = np.sum( pull**2 )
+    ndof = len(N) - 4 # number of degrees of freedom
+    p_value = 1 - chi2.cdf(chisq, ndof)
+
+    # --------------
+    # shld this be a one sided or two sided test?
+    # --------------
+    Z = chi2.ppf(1-p_value,1)**0.5 # significance
+
+    return Z, p_value
+
+
 def find_N90(N, P, P_err, plot_filepath=False):
 
     def third_degree(x, a, b, c, d):
@@ -84,15 +98,7 @@ def find_N90(N, P, P_err, plot_filepath=False):
     # Goodness of fit test
     # ------------------
 
-    chisq = np.sum( pull**2 )
-    ndof = len(N) - 4 # number of degrees of freedom
-    p_value = 1 - chi2.cdf(chisq, ndof)
-
-    # --------------
-    # shld this be a one sided or two sided test?
-    # --------------
-    Z = chi2.ppf(1-p_value,1)**0.5 # significance
-
+    Z, p_value = goodness_of_fit(pull)
     print(f'p value: {p_value}, Z: {Z}')
 
     # ------------------
