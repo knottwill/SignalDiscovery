@@ -55,10 +55,10 @@ def signal_background_test(dataset, cdf, starting_params: dict, print_fitting_re
     h1_valid = mi.valid
     if not(h1_valid):
         print('#---------------')
-        print('Warning: valid minimum NOT FOUND')
+        print('Warning: valid minimum NOT FOUND for H1')
         print('#---------------')
         print(mi)
-        return 'h1 invalid', 0, 0 # don't continue with test
+        return 'invalid minimum', 0, 0 # don't continue with test
 
     # Parameter values for total model fit
     h1_params = list(mi.values)
@@ -87,10 +87,10 @@ def signal_background_test(dataset, cdf, starting_params: dict, print_fitting_re
     h0_valid = mi.valid
     if not(h0_valid):
         print('#---------------')
-        print('Warning: valid minimum NOT FOUND')
+        print('Warning: valid minimum NOT FOUND for H0')
         print('#---------------')
         print(mi)
-        return 'h0 invalid', 0, 0 # don't continue with test
+        return 'invalid minimum', 0, 0 # don't continue with test
 
     # Parameter values for background-only fit
     h0_params = list(mi.values)
