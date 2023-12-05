@@ -5,4 +5,5 @@ main.aux
 main.log
 main.synctex.gz
 data/
-PN_data.pkl
+*.pkl
+.DS_Store

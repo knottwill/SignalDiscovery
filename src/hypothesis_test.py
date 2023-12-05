@@ -96,9 +96,9 @@ def signal_background_test(dataset, pdf, cdf, starting_params, binned=False, plo
         
 
     # Setting constraints
-    mi.limits['f'] = (0, 1) # fraction of signal is between 0 and 1
-    mi.limits['lam'] = (0, 2) # lambda cannot be negative (otherwise there is no 'decay')
-    mi.limits['sigma'] = (0, (beta-alpha)/2) # sigma should not be too wide, and cannot be negative
+    mi.limits['f'] = (0.01, 1) # fraction of signal is between 0 and 1
+    mi.limits['lam'] = (0.1, 1.5) # lambda cannot be negative (otherwise there is no 'decay')
+    mi.limits['sigma'] = (0.01, (beta-alpha)/2) # sigma should not be too wide, and cannot be negative
     mi.limits['mu'] = (alpha, beta) # the signal should not peak outside of [alpha, beta]
 
     # ---------------------------
@@ -112,8 +112,6 @@ def signal_background_test(dataset, pdf, cdf, starting_params, binned=False, plo
     # If valid minimum is not found, print message
     h1_valid = mi.valid
     if not(h1_valid):
-        print('Warning: valid minimum NOT FOUND for H1')
-        print(mi)
         return 'invalid minimum', 0, 0 # don't continue with test
 
     # Parameter values for total model fit
@@ -139,8 +137,6 @@ def signal_background_test(dataset, pdf, cdf, starting_params, binned=False, plo
     # If valid minimum is not found, print message
     h0_valid = mi.valid
     if not(h0_valid):
-        print('Warning: valid minimum NOT FOUND for H0')
-        print(mi)
         return 'invalid minimum', 0, 0 # don't continue with test
 
     # Parameter values for background-only fit

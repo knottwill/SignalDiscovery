@@ -7,7 +7,7 @@ import numpy as np
 from scipy.stats import norm, expon
 from time import process_time
 
-def generate_from_total_pdf(N_events, print_timings=False, f=0.1, lam=0.5, mu=5.28, sigma=0.018):
+def generate_from_total_pdf(N_events, seed=False, print_timings=False, f=0.1, lam=0.5, mu=5.28, sigma=0.018):
     """
     Inverse CDF method to generate data from the total PDF
 
@@ -22,6 +22,8 @@ def generate_from_total_pdf(N_events, print_timings=False, f=0.1, lam=0.5, mu=5.
     # evaulating the CDFs at alpha and beta
     ########################
     """
+    if seed:
+        np.random.seed(seed)
 
     # upper & lower bounds of M
     alpha = 5
