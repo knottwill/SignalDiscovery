@@ -201,12 +201,12 @@ def two_signal_test(dataset, pdf, cdf, starting_params, binned=False, plot=False
         mi = Minuit(nll, **starting_params)
 
     # Setting constraints
-    mi.limits['f1'] = (0, 0.5)
-    mi.limits['f2'] = (0, 0.5)
+    mi.limits['f1'] = (0.01, 0.5)
+    mi.limits['f2'] = (0.01, 0.5)
     mi.limits['mu1'] = (5, 5.6) # the signal should not peak outside of [alpha, beta]
     mi.limits['mu2'] = (5, 5.6)
-    mi.limits['lam'] = (0, 2) # lambda cannot be negative (otherwise there is no 'decay')
-    mi.limits['sigma'] = (0, 0.3) # sigma should not be too wide, and cannot be negative
+    mi.limits['lam'] = (0.1, 1.5) # lambda cannot be negative (otherwise there is no 'decay')
+    mi.limits['sigma'] = (0.01, 0.3) # sigma should not be too wide, and cannot be negative
 
     # ---------------------------
     # Run the fit for the alternate hypothesis
@@ -218,8 +218,6 @@ def two_signal_test(dataset, pdf, cdf, starting_params, binned=False, plot=False
     # If valid minimum is not found, print message
     h1_valid = mi.valid
     if not(h1_valid):
-        print('Warning: valid minimum NOT FOUND for H1')
-        print(mi)
         return 'invalid minimum', 0, 0 # don't continue with test
 
     h1_params = list(mi.values)
@@ -240,8 +238,6 @@ def two_signal_test(dataset, pdf, cdf, starting_params, binned=False, plot=False
     # If valid minimum is not found, print message
     h0_valid = mi.valid
     if not(h0_valid):
-        print('Warning: valid minimum NOT FOUND for H0')
-        print(mi)
         return 'invalid minimum', 0, 0 # don't continue with test
 
     # Parameter values for total model fit
@@ -262,7 +258,6 @@ def two_signal_test(dataset, pdf, cdf, starting_params, binned=False, plot=False
 
     # Neyman-Pearson Test statistic
     T = h0_nll - h1_nll
-    print(f'T: {T}')
 
     Z, p_value = neyman_pearson_test(T)
 
