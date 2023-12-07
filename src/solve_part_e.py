@@ -1,7 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.style as mplstyle
 from iminuit import Minuit
 from iminuit.cost import UnbinnedNLL
+import matplotlib.style as mplstyle
+
+# import custom generation function
+from generation import generate_from_total_pdf
+# import our custom PDFs
+from distributions import total_pdf, signal_pdf, background_pdf
+
+mplstyle.use('src/mphil.mplstyle')
 
 # True parameter values
 true_params = {'f': 0.1, 'lam': 0.5, 'mu': 5.28, 'sigma': 0.018}
@@ -10,49 +19,41 @@ true_params = {'f': 0.1, 'lam': 0.5, 'mu': 5.28, 'sigma': 0.018}
 alpha = 5
 beta = 5.6
 
+
 # ---------------
-# Generating data
+# Generating 100K events
 # ---------------
 from generation import generate_from_total_pdf
 
+np.random.seed(42)
 N_events= 100000
 dataset = generate_from_total_pdf(N_events, **true_params)
 
-# ---------------
+
+# ------------------------------
 # Starting parameters for minimisation
-# Our starting parameters are the true parameters + some approprate random shift
-# The shift is limited such that we don't start with 'unphysical' parameters
-# or with parameters too far away from the true parameters
-# ---------------
-
-random_shifts = {
-    'f': np.random.uniform(-0.09, 0.5), 
-    'lam': np.random.uniform(-0.3, 1), 
-    'mu': np.random.uniform(-0.25, 0.3), 
-    'sigma': np.random.uniform(-0.01, 0.03)
-}
-
-# Creating starting parameters
+# We generate starting parameters by adding random shifts 
+# to the true parameters of up to 30% of their absolute value
+# (the parameters are rounded to 4 significant figures)
+# ------------------------------
 starting_params = {}
 for param in true_params:
+    # generating random shift
+    max_shift = 0.3*np.abs(true_params[param])
+    random_shift = np.random.uniform(-max_shift, max_shift)
 
-    # true parameter + random shift
-    starting_params[param] = true_params[param] + random_shifts[param]
+    # adding random shift
+    starting_params[param] = true_params[param] + random_shift
 
-    # round to 4 significant figures
+    # rounding to 4 sig. fig.
     starting_params[param] = float(f'{starting_params[param]:.4}')
 
+
 # ---------------
-# Creating Minimisation Object
-# Set constraints to parameters 
-# Some are physical constaints (eg. sigma > 0) 
-# Some are just sensible constraints
+# Fitting PDF using maximum likelihood estimation
 # ---------------
 
-# import our total PDF
-from distributions import total_pdf
-
-# Cost function is negative log likelihood (with factor 2 so it is chi2 distributed)
+# Cost function is negative log likelihood
 nll = UnbinnedNLL(dataset, total_pdf)
 
 # Minimisation object
@@ -64,44 +65,44 @@ mi.limits['lam'] = (0, None) # lambda cannot be negative (otherwise there is no 
 mi.limits['sigma'] = (0, (beta-alpha)/2) # sigma should not be too wide, and cannot be negative
 mi.limits['mu'] = (alpha, beta) # the signal should not peak outside of [alpha, beta]
 
-# ---------------
 # Running Minimisation and the error finding algorithms
-# ---------------
-
 mi.migrad() # minimisation
 mi.hesse() # finds symmetric uncertainty
 mi.minos() # finds non-symmetric confidence interval
 
-print(mi)
+assert mi.valid
 
 # ---------------
-# Binning and Plotting
+# Binning and Plotting Results
 # ---------------
 
 # Bin the events
 bins = 120
 bin_density, bin_edges = np.histogram(dataset, bins=bins, density=True)
-counts, _ = np.histogram(dataset, bins=bins, density=False)
+bin_counts, _ = np.histogram(dataset, bins=bins, density=False)
+midpoints = 0.5 * (bin_edges[:-1] + bin_edges[1:]) # bin midpoints
 
 # Calculating uncertainty on bin_density
-count_uncertainties = np.sqrt(counts) 
+count_uncertainties = np.sqrt(bin_counts) 
 bin_widths = np.diff(bin_edges)
-bin_err = count_uncertainties / (len(dataset) * bin_widths)
+density_uncertainties = count_uncertainties / (len(dataset) * bin_widths)
 
-# Calculate bin midpoints
-midpoints = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+# Evaluate the PDFs
+pdf_total = total_pdf(midpoints, *mi.values)
+weighted_signal = mi.values['f'] * signal_pdf(midpoints, mi.values['mu'], mi.values['sigma'])
+weighted_background = (1-mi.values['f']) * background_pdf(midpoints, mi.values['lam'])
 
 fig, ax = plt.subplots()
 
-# Plotting true model, fitting model and the binned data
-ax.errorbar(midpoints, bin_density, yerr=bin_err, fmt='.', capsize=1, label='Binned Data')
-ax.plot(midpoints, total_pdf(midpoints, **true_params), label='True model', color='red')
-ax.plot(midpoints, total_pdf(midpoints, *mi.values), label='Fitted model', color='orange')
-
+# Plotting fitted model, signal and background with binned data
+ax.errorbar(midpoints, bin_density, yerr=density_uncertainties, fmt='.', color='black', capsize=1, label='Binned Data')
+ax.plot(midpoints, pdf_total, label='Fitted PDF', color='#1f77b4')
+ax.plot(midpoints, weighted_signal, label='Signal', color='#ff7f0e', linestyle=':')
+ax.plot(midpoints, weighted_background, label='Background', color='#2ca02c', linestyle='--')
+ax.grid(True)
 ax.set_xlabel('M')
 ax.set_ylabel('Density')
-ax.set_title(f'{N_events} total events')
-
+ax.set_title(f'Maximum Likelihood Estimation from 100K events')
 ax.legend()
 
 fig.savefig('plots/part_e.png')

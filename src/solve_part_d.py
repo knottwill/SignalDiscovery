@@ -64,7 +64,7 @@ plt.tight_layout()  # Adjusts the plots to fit into the figure neatly
 fig.savefig(f'plots/part_d_weighted.png')
 
 # ---------------------
-# Plotting the weighted PDFs 
+# Plotting the normalised PDFs 
 # ---------------------
 
 fig, ax = plt.subplots(1, 1, figsize=(10, 6)) 
