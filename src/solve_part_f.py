@@ -6,11 +6,16 @@ from critical_size import find_N90
 from time import time
 import numpy as np
 import pickle 
+import os
 
 start = time()
 np.random.seed(42)
 
 true_params = {'f': 0.1, 'lam': 0.5, 'mu': 5.28, 'sigma': 0.018}
+
+# Make plots/ directory if it doesn't already exist
+if not os.path.exists('plots/'):
+    os.makedirs('plots/')
 
 # --------------------
 # Getting NP data

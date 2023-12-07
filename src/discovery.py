@@ -8,7 +8,7 @@ def standard_binomial_error(p, n):
 
 def probability_of_discovery(N_events, n_attempts, true_params, generation_func, hypothesis_test, pdf, cdf):
     """
-    Find probability of discovering the signal for each data size 'N_events'
+    Find probability of discovering the signal for data size 'N_events'
 
     This function estimates the probability of discovering the signal by
     performing a Neyman-Pearson test on a dataset of size 'N_events'

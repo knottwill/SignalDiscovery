@@ -8,3 +8,4 @@ data/
 *.pkl
 .DS_Store
 sandbox.ipynb
+report.ipynb

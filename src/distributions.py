@@ -2,7 +2,7 @@
 Distributions (PDFs and CDFs)
 ----------
 This module contains functions that compute the normalised probability
-density functions and cumulative distribution functions of the background-only 
+density functions and cumulative density functions of the background-only 
 model, the signal model, the signal + background model, and the double signal
 model. All are defined over the range [5, 5.6]. This range must not be a parameter,
 otherwise they cannot be used to fit to data.

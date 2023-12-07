@@ -23,7 +23,7 @@ def plot_NP(N, P, P_err, P_pred, N90, filepath=False):
     ax[0,0].errorbar( N, P, yerr=P_err, capsize=2, fmt='.', c='black')
     ax[0,0].plot(N, P_pred, label='Least Squares Fit')
     # ax[0,0].errorbar(N, P, yerr=P_err, fmt='o', label='Data')
-    ax[0,0].set_ylabel('P')
+    ax[0,0].set_ylabel('Probability of discovery')
     ax[0,0].axhline(y=0.9, color='green', linestyle='--')
     ax[0,0].axvline(x=N90, color='green', linestyle='--')
 

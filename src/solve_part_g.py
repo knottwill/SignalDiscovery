@@ -5,12 +5,17 @@ from distributions import two_signal_cdf, two_signal_pdf
 from critical_size import find_N90
 from time import time
 import numpy as np
-import pickle 
+import pickle
+import os 
 
 start = time()
 np.random.seed(42)
 
 true_params = {"f1": 0.1, "f2": 0.05, "lam": 0.5, "mu1": 5.28, "mu2": 5.35, "sigma": 0.018}
+
+# Make plots/ directory if it doesn't already exist
+if not os.path.exists('plots/'):
+    os.makedirs('plots/')
 
 # --------------------
 # Getting NP data

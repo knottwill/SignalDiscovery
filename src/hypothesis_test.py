@@ -101,6 +101,12 @@ def signal_background_test(dataset, pdf, cdf, starting_params, binned=False, plo
     mi.limits['sigma'] = (0.01, (beta-alpha)/2) # sigma should not be too wide, and cannot be negative
     mi.limits['mu'] = (alpha, beta) # the signal should not peak outside of [alpha, beta]
 
+    # Strict contstraints
+    # mi.limits['f'] = (0.01, 0.2) 
+    # mi.limits['lam'] = (0.3, 0.7) 
+    # mi.limits['sigma'] = (0.01, 0.3) 
+    # mi.limits['mu'] = (5.2, 5.4) 
+
     # ---------------------------
     # Run the fit for the alternate hypothesis
     # ---------------------------

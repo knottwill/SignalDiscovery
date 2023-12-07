@@ -4,6 +4,7 @@ import matplotlib.style as mplstyle
 from iminuit import Minuit
 from iminuit.cost import UnbinnedNLL
 import matplotlib.style as mplstyle
+import os
 
 # import custom generation function
 from generation import generate_from_total_pdf
@@ -51,6 +52,7 @@ for param in true_params:
 
 # ---------------
 # Fitting PDF using maximum likelihood estimation
+# (Minimisation of negative log likelihood)
 # ---------------
 
 # Cost function is negative log likelihood
@@ -71,6 +73,7 @@ mi.hesse() # finds symmetric uncertainty
 mi.minos() # finds non-symmetric confidence interval
 
 assert mi.valid
+print(mi)
 
 # ---------------
 # Binning and Plotting Results
@@ -104,5 +107,9 @@ ax.set_xlabel('M')
 ax.set_ylabel('Density')
 ax.set_title(f'Maximum Likelihood Estimation from 100K events')
 ax.legend()
+
+# Make plots/ directory if it doesn't already exist
+if not os.path.exists('plots/'):
+    os.makedirs('plots/')
 
 fig.savefig('plots/part_e.png')

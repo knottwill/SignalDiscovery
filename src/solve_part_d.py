@@ -12,6 +12,7 @@ and total PDFs.
 import matplotlib.pyplot as plt
 import matplotlib.style as mplstyle
 import numpy as np
+import os
 
 mplstyle.use('src/mphil.mplstyle')
 
@@ -43,6 +44,9 @@ weighted_background = (1-f)*pdf_background
 # Ensure the total pdf is equal to signal + background (with weightings)
 assert np.all(pdf_total == weighted_signal + weighted_background) 
 
+# Make plots/ directory if it doesn't already exist
+if not os.path.exists('plots/'):
+    os.makedirs('plots/')
 
 # ---------------------
 # Plotting the weighted PDFs 
@@ -62,6 +66,7 @@ ax.grid(True)
 
 plt.tight_layout()  # Adjusts the plots to fit into the figure neatly
 fig.savefig(f'plots/part_d_weighted.png')
+print('Plot saved in plots/part_d_weighted.png')
 
 # ---------------------
 # Plotting the normalised PDFs 
@@ -82,3 +87,4 @@ ax.grid(True)
 
 plt.tight_layout()  # Adjusts the plots to fit into the figure neatly
 fig.savefig(f'plots/part_d_normalised.png')
+print('Plot saved in plots/part_d_normalised.png')
