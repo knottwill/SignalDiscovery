@@ -1,12 +1,14 @@
-from generation import generate_from_total_pdf
-from hypothesis_test import signal_background_test
-from discovery import probability_of_discovery
-from distributions import total_cdf, total_pdf
-from critical_size import find_N90
 from time import time
 import numpy as np
 import pickle 
 import os
+from iminuit import Minuit
+from iminuit.cost import LeastSquares
+
+from generation import generate_from_total_pdf
+from hypothesis_test import signal_background_test
+from discovery import probability_of_discovery
+from NP_analysis import goodness_of_fit, find_solution, plot_NP
 
 start = time()
 np.random.seed(42)
@@ -18,7 +20,7 @@ if not os.path.exists('plots/'):
     os.makedirs('plots/')
 
 # --------------------
-# Getting NP data
+# Calculating Discovery Probabilities 
 # --------------------
 
 # array storing the data sizes at which we will
@@ -31,31 +33,72 @@ for N_events in N:
 
     p, p_err = probability_of_discovery(
         N_events=N_events, 
-        n_attempts=500,
+        n_trials=500,
         true_params=true_params,
         generation_func=generate_from_total_pdf,
         hypothesis_test=signal_background_test,
-        pdf = total_pdf,
-        cdf = total_cdf
     )
 
     P.append(p)
     P_err.append(p_err)
-    print(f"Sample size (N_events)={N_events}, probability of discovery={P[-1]} +- {P_err[-1]}")
+    print(f"Sample size (N_events)={N_events}, probability of discovery={p} +- {p_err}")
 P, P_err = np.array(P), np.array(P_err)
 
 # Save data (just in case)
 data_to_save = {'N': N, 'P': P, 'P_err': P_err}
-with open('PN_data.pkl', 'wb') as file:
+with open('part_f_data.pkl', 'wb') as file:
     pickle.dump(data_to_save, file)
 
-# -----------------------------
-# Finding N90
-# -----------------------------
+# ---------------------
+# Fit 3rd degree polynomial to data
+# ----------------------
 
-N90, N90_err, coverage, p_value, Z = find_N90(N, P, P_err, plot_filepath='plots/part_f.png')
+# Replace 0 uncertainties with the minimum non-zero uncertainty
+# so as to not produce errors in the least squares estimation
+P_err[P_err == 0.0] = min(P_err[P_err != 0])
 
-print(f"Result = {N90} +- {N90_err}\n")
-print(f"Finished in {time() - start: .4}s")
-print(f"Line fitted via least squares had a coverage of {coverage}\n")
-print(f"Goodness of fit test results: p value = {p_value}, Z = {Z}")
+# We normalise N since it helps the fitting
+N_norm = (N-np.mean(N))/np.std(N)
+
+# Third degree polynomial model for fitting
+def third_degree(x, a, b, c, d):
+    return a*(x**3) + b*(x**2) + c*x + d 
+
+# Least squares fit
+cost = LeastSquares(N_norm, P, P_err, third_degree)
+starting_params = {'a': 0.01, 'b': -0.05, 'c': 0.1, 'd': 0.9}
+mi = Minuit(cost, **starting_params)
+mi.migrad()
+
+# Calculating predicted values and pulls
+P_pred = third_degree(N_norm, *mi.values)
+pull = (P - P_pred)/P_err
+
+# goodness-of-fit evaluation
+coverage, p_value, chisq_per_dof = goodness_of_fit(pull)
+print(f"coverage of fitted model: {round(100*coverage)}%")
+print(f"chi2 test p value: {p_value:.5}")
+print(f"chi2 per degree of freedom: {chisq_per_dof:.5}\n")
+
+# ---------------------
+# Calculate size of dataset for 90% discovery rate
+# ----------------------
+
+initial_guess = (600 - np.mean(N))/np.std(N)
+N90_norm, N90_norm_err = find_solution(
+    target=0.9,
+    initial_guess=initial_guess,
+    model = third_degree, 
+    params=mi.values,
+    errors=mi.errors
+)
+
+# converting back to non-normalised sizes
+N90 = N90_norm*np.std(N) + np.mean(N)
+N90_err = np.std(N)*N90_norm_err
+print(f"Size of dataset for 90% discovery rate: {round(N90)} +- {round(N90_err)}")
+
+# Plot results
+plot_NP(N, P, P_err, P_pred, N90, filepath="plots/part_f.png")
+
+print(f'\nFinished in {time() - start:.4}s')
