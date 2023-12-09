@@ -1,4 +1,4 @@
-# Statistical Discovery of Signal
+# S1 Coursework - William Knottenbelt
 
 ### Usage
 
