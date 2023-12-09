@@ -21,38 +21,28 @@
 
 \subsection*{Part (a)}
 
-The total probability density function is given by:
+The total probability density function, $p$, is properly normalised over $M \in [-\infty, +\infty]$ if it integrates to unity. The integral of $p$ can be written as a weighted sum of signal and background terms:
 
-\[ p(M; f, \lambda, \mu, \sigma) = fs(M; \mu, \sigma) + (1-f)b(M; \lambda), \]
-where $s$ is the normal distribution and $ b$ is the exponential decay distribution, which is only non-zero for $M \geq 0$.
+\begin{equation}
+\int_{-\infty}^{+\infty} p \, dM = 
+f\int_{-\infty}^{+\infty} s \, dM + 
+(1-f)\int_{0}^{+\infty} b \, dM.
+\label{eq:integral}
+\end{equation}
 
-The condition for $p$ to be properly normalised over $M \in [-\infty, +\infty]$ is:
-\[ \int_{-\infty}^{+\infty} p \, dM = 1, \]
-
-To show that $p$ is properly normalised we will use the identity:
+To show that $p$ is properly normalised we require the identity:
 \begin{equation}
 \int_{-\infty}^{+\infty} e^{-ax^2} = \sqrt{\frac{\pi}{a}},
 \label{eq:exp}
 \end{equation}
 
-We have:
-\[ 
-\int_{-\infty}^{+\infty} p \, dM = 
-f\int_{-\infty}^{+\infty} s \, dM + 
-(1-f)\int_{0}^{+\infty} b \, dM.
-\]
-
 For the signal term, we have:
 \[
 \int_{-\infty}^{+\infty} s \, dM =
-\int_{-\infty}^{+\infty} \frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(M - \mu)^2}{2\sigma^2}\right) \, dM.
+\int_{-\infty}^{+\infty} \frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(M - \mu)^2}{2\sigma^2}\right) \, dM
+= \frac{1}{\sigma\sqrt{2\pi}} \int_{-\infty}^{+\infty} \exp\left(-\frac{x^2}{2\sigma^2}\right) \, dx,
 \]
-We use the substitution $x = M - \mu$ such that $dx = dM$ and the limits are the same since $x(M \to \pm\infty) \to \pm\infty$ for any finite $\mu$. Then we have:
-\[
-\int_{-\infty}^{+\infty} s \, dM =
-\frac{1}{\sigma\sqrt{2\pi}} \int_{-\infty}^{+\infty} \exp\left(-\frac{x^2}{2\sigma^2}\right) \, dx.
-\]
-This integral has the form of identity \eqref{eq:exp} with $a = \frac{1}{2\sigma^2}$, hence we see that:
+where we used the substitution $x = M - \mu$. This integral has the form of identity \eqref{eq:exp} with $a = \frac{1}{2\sigma^2}$, hence we see that:
 \[
 \int_{-\infty}^{+\infty} s \, dM =
 \frac{1}{\sigma\sqrt{2\pi}} \sqrt{2\sigma^2\pi} = 1.
@@ -65,120 +55,53 @@ For the background term we have:
 (-e^{-\lambda M}) |_0^{+\infty} = 1
 \]
 
-Hence, we see that:
+Hence, both the signal and background terms integrate to unity. We can plug this into equation \ref{eq:integral} and we see that the normalisation condition is satisfied:
 \[ 
 \int_{-\infty}^{+\infty} p \, dM = 
-f\int_{-\infty}^{+\infty} s \, dM + 
-(1-f)\int_{0}^{+\infty} b \, dM =
 f + (1-f) = 1.
 \]
 
-Thus, the normalisation condition is satisfied for $p$ over $M \in [-\infty, +\infty]$.
-
 \subsection*{Part (b)}
 
-To ensure that the signal distribution contributes the correct fraction $f$ to the total probability over $M \in [\alpha, \beta]$, and the background distribution contributes ($1-f$), we must first normalise each distribution individually over the range $M \in [\alpha, \beta]$, before performing a weighted sum to construct the total PDF. As each distribution is normalised separately, it is guaranteed that any weighted sum of the distributions will also be correctly normalised (provided that the weights sum to unity). 
-
-For M restricted to the range $M \in [\alpha, \beta]$, the signal distribution is defined:
-\[
-s(M; \mu, \sigma) =
-\begin{cases} 
-\frac{A}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(M - \mu)^2}{2\sigma^2}\right) 
-& \text{for } \alpha < M \leq \beta \\
-0 & \text{otherwise}.
-\end{cases} 
-\]
-Where $A$ is a normalisation factor, $\mu$ is the mean of the distribution and $\sigma$ is the standard deviation. For $s$ to be properly normalised we must have:
-
-\[
-\int_{\alpha}^{\beta} s(M) \, dM = 1.
-\]
-
+In general, any probability density function, $g(X)$, can be normalised over an arbitrary range $[\alpha, \beta]$ by multiplying it by the factor $\frac{1}{F(\beta) - F(\alpha)}$, where $F$ is its respective cumulative density function, CDF. To see proof of this, we add normalisation factor, $A$, to $g$. We have:
+$$
+1 = \int_{\alpha}^{\beta} Ag(M) \, dM 
+= A\left(\int_{-\infty}^{\beta} g(M) \, dM - \int_{-\infty}^{\alpha} g(M) \, dM \right)
+= A(F(\beta) - F(\alpha))
+$$
 Hence:
+$$
+A = \frac{1}{F(\beta) - F(\alpha)}
+$$
 
-\[
-1 = \int_{\alpha}^{\beta} s(M) \, dM 
-= 
-\int_{-\infty}^{\beta} s(M) \, dM - \int_{-\infty}^{\alpha} s(M) \, dM
-\]
-\[
-= A \left( 
-\int_{-\infty}^{\beta} \frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(M - \mu)^2}{2\sigma^2}\right) \, dM - 
-\int_{-\infty}^{\alpha} \frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(M - \mu)^2}{2\sigma^2}\right) \, dM
-\right)
-\]
-\[
-= A (F_{norm}(\beta) - F_{norm}(\alpha)),
-\]
-where $F_{norm}$ is the cumulative density function of the normal distribution defined over the range $[-\infty, +\infty]$, which is given by:
+To ensure that the signal and background distributions contribute the correct fractions ($f, (1-f)$) to the total probability, they must be normalised individually before summing them. The CDF of the normal distribution is $F(X) = \Phi(\frac{X-\mu}{\sigma})$, hence the normalisation factor for the signal distribution is:
+$$
+\frac{1}{\Phi(\frac{\beta-\mu}{\sigma}) - \Phi(\frac{\alpha-\mu}{\sigma})}
+$$
 
-\[
-F_{norm}(X) = \Phi(\frac{X-\mu}{\sigma}).
-\]
-
-Thus, the normalisation factor is:
-
-\[
-A = \frac{1}{\Phi(\frac{\beta-\mu}{\sigma}) - \Phi(\frac{\alpha-\mu}{\sigma})}.
-\]
-
-Assuming that $\alpha, \beta > 0$, the background distribution is defined:
-
-\[ 
-b(M; \lambda) = 
-\begin{cases} 
-B\lambda e^{-\lambda M} & \text{for } \alpha < M \leq \beta, \\
-0 & \text{otherwise},
-\end{cases}
-\]
-where $B$ is a normalisation factor and $\lambda$ is the decay constant. For $b$ to be properly normalised, we must have:
-
-\[
-1 = \int_{\alpha}^{\beta} b(M) \, dM 
-= 
-\int_{-\infty}^{\beta} b(M) \, dM - \int_{-\infty}^{\alpha} b(M) \, dM
-\]
-\[
-= B \left( 
-\int_{0}^{\beta} \lambda e^{-\lambda M} \, dM - 
-\int_{0}^{\alpha} \lambda e^{-\lambda M} \, dM
-\right)
-\]
-\[
-= B (F_{exp}(\beta) - F_{exp}(\alpha)),
-\]
-where $F_{exp}$ is the cumulative density function of the exponential decay distribution, which is given by:
-\[
-F_{exp}(X) = 
+The CDF of the exponential decay distribution is:
+$$
+F(X) = 
 \begin{cases} 
 1 - e^{-\lambda X} & \text{for } X \geq 0, \\
 0 & \text{for } X < 0.
 \end{cases}
-\]
+$$
 
-Hence we have:
-\[
-B = \frac{1}{F_{exp}(\beta) - F_{exp}(\alpha)} 
-= \frac{1}{e^{-\lambda\alpha} - e^{-\lambda \beta}}.
-\]
+Hence, provided that $\alpha, \beta > 0$, the normalisation factor for the background distribution is:
+$$
+\frac{1}{e^{-\lambda\alpha} - e^{-\lambda \beta}}.
+$$
 
-Finally, the total probability density function, is a weighted sum of the individually normalised distributions:
-\[
-p(M) = 
-fs(M; \mu, \sigma) + (1-f)b(M; \lambda).
-\]
-
-This is guaranteed to be properly normalised since:
-
+The total probability density function is a weighted sum of the signal and background distributions. Since the signal and background are both normalised, the total PDF is also normalised:
 \[ 
 \int_{\alpha}^{\beta} p \, dM = 
-\int_{\alpha}^{\beta} fs + (1-f)b \, dM =
 f\int_{\alpha}^{\beta} s \, dM + 
 (1-f)\int_{\alpha}^{\beta} b \, dM
 = f + (1-f) = 1.
 \]
 
-Assuming $\alpha, \beta > 0$, the full expression is then:
+Assuming $\alpha, \beta > 0$, the full expression is:
 \[
 p(M) = 
 \frac{f}{\Phi(\frac{\beta-\mu}{\sigma}) - \Phi(\frac{\alpha-\mu}{\sigma})}
@@ -191,49 +114,27 @@ p(M) =
 .
 \]
 
-\subsection*{Part (c)}
-
-We coded the normalised signal, background and total distributions using the \texttt{scipy.stats} package to implement the expressions found in part (b). Namely:
-
-$$
-s(M; \mu, \sigma) = 
-\frac{1}{\Phi(\frac{\beta-\mu}{\sigma}) - \Phi(\frac{\alpha-\mu}{\sigma})}
-\frac{1}{\sigma\sqrt{2\pi}}
-\exp\left(-\frac{(M - \mu)^2}{2\sigma^2}\right),
-$$
-
-$$
-b(M; \lambda) = 
-\frac{\lambda e^{-\lambda M}}
-{e^{-\lambda\alpha} - e^{-\lambda\beta}},
-$$
-
-$$
-p(M; \boldsymbol{\theta}) = fs(M; \mu, \sigma) + (1-f)b(M; \lambda),
-$$
-where $\boldsymbol{\theta} = (f, \lambda, \mu, \sigma)$ represents the parameters.
-
-Once I had coded the probability density functions, I wrote a script \texttt{solve\_part\_c.py}, which integrates the total probability density over $M \in [5, 5.6]$ using \texttt{scipy.integrate.quad} for 1000 random combinations of the parameters $(f, \lambda, \mu, \sigma)$, and checks that each integral comes out to unity. This script was run and all checks passed successfully.
-
-\subsection*{Part (d)}
-
 \begin{figure}[h]
 \centering
 \includegraphics[width=1\textwidth]{part_d_weighted.png}
-\caption{Visualisation of the total, signal and background probability density functions with the weights applied to the signal and background models such that only the total PDF is properly normalised.}
+\caption{Visualisation of the total, signal and background PDFs with the weights applied to the signal and background models.}
 \label{fig:dWeighted}
 \end{figure}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=1\textwidth]{part_d_normalised.png}
-\caption{Visualisation of the total, signal and background probability density functions where each distribution is properly normalised.}
+\caption{Visualisation of the total, signal and background PDFs, with each distribution properly normalised.}
 \label{fig:dNorm}
 \end{figure}
 
-We created two plots visualising the distributions with the true parameters $f = 0.1, \lambda = 0.5, \mu = 5.28, \sigma = 0.018$. Fig. \ref{fig:dWeighted} shows the distributions with the fractions $f$ and $(1-f)$ applied to the signal and background distributions. Fig. \ref{fig:dNorm} shows the distributions properly normalised.  
+\subsection*{Part (c)}
 
-To re-generate these plots, run \texttt{solve\_part\_d.py} and find the results in \texttt{plots/}
+We implemented the normalised signal, background and total PDFs as found in part (b) using the \texttt{scipy.stats} package. We then integrated the total PDF over $[5, 5.6]$ for 1000 random combinations of the parameters, $\boldsymbol{\theta}$, and all integrals came out to unity as expected. 
+
+\subsection*{Part (d)}
+
+We created two plots visualising the distributions with the true parameters. Fig. \ref{fig:dWeighted} includes the weights $f$ and $(1-f)$ on the signal and background distributions. Fig. \ref{fig:dNorm} shows the distributions properly normalised (ie. without the weights).  
 
 \subsection*{Part (e)}
 
@@ -251,7 +152,6 @@ For a given maximum likelihood estimate $\hat{\theta} \in \{\hat{f}, \hat{\lambd
 
 \begin{equation}
 V(\hat{\theta}) 
-= \left( {NE\left[\left(\frac{{\partial}l}{{\partial\theta}}\right)^2\right]} \right) ^{-1}
 = \left( {NE\left[\frac{{\partial^2}l}{{\partial\theta^2}}\right]} \right)^{-1},
 \label{eq:varbound}
 \end{equation}
@@ -276,7 +176,7 @@ For all estimates, the true values of the parameters lie within the uncertaintie
 \end{figure}
 
 % \end{comment}
-% \begin{comment}
+\begin{comment}
 
 \section*{Section B}
 
@@ -414,6 +314,6 @@ $$ N_{90} = 2570 \pm 35 $$
 
 As discussed in part (f), the uncertainty on this result may not be trustworthy, as it was calculated assuming that the predictive model's parameter estimates were maximally efficient \ref{eq:varbound}, but this is only valid with asymptotic sample sizes. Since we had only 50 data-points, this assumption may not be correct. 
 
-% \end{comment}
+\end{comment}
 
 \end{document}

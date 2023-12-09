@@ -68,6 +68,4 @@ def probability_of_discovery(N_events, n_trials, true_params, generation_func, h
     p = discovery_count/n_trials
     p_err = standard_binomial_error(p, n_trials)
 
-    print(f"number of successful hypothesis tests conducted: {n_trials}")
-
     return p, p_err

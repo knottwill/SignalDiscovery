@@ -29,7 +29,7 @@ N = np.linspace(1500, 3000, 50, dtype=int)
 
 P = [] # probability of discovery
 P_err = [] # error in probability of discovery
-for N_events in N:
+for i, N_events in enumerate(N):
 
     p, p_err = probability_of_discovery(
         N_events=N_events, 
@@ -41,7 +41,9 @@ for N_events in N:
 
     P.append(p)
     P_err.append(p_err)
-    print(f"Sample size (N_events)={N_events}, probability of discovery={P[-1]} +- {P_err[-1]}")
+    # printing loading messages
+    if 2*(i+1)%10 == 0:
+        print(f"{2*(i+1)}% complete")
 P, P_err = np.array(P), np.array(P_err)
 
 # Save data (just in case)

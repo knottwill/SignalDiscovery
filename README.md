@@ -1,5 +1,7 @@
 # S1 Coursework - William Knottenbelt
 
+This repository contains all code necessary to reproduce the results discussed in `report/main.pdf`.
+
 ### Usage
 
 To generate the docker image and run the container, navigate to the root directory and use:
@@ -8,7 +10,7 @@ $ docker build -t <image_name> .
 $ docker run -ti <image_name>
 ```
 
-To replicate the results and/or plots from parts c,d,e,f and g in the coursework sheet, run the following scripts:
+To replicate the results and/or plots from parts c,d,e,f and g, run the following scripts:
 
 ```bash
 $ python src/solve_part_c.py
@@ -25,7 +27,7 @@ Results will be printed to terminal and plots will be saved in `plots/`
 I ran all scripts on my personal laptop with the following specifications:
 - Chip:	Apple M1 Pro
 - Total Number of Cores: 8 (6 performance and 2 efficiency)
-- Memory: 16 GB
+- Memory (RAM): 16 GB
 - Operating System: macOS Sonoma v14.0
 
 The scripts `solve_part_c.py`, `solve_part_d.py`, `solve_part_e.py` all ran in less than 10 seconds.
