@@ -4,7 +4,15 @@ This repository contains all code necessary to reproduce the results discussed i
 
 ### Usage
 
+Clone the repository:
+
+```bash
+$ git clone https://gitlab.developers.cam.ac.uk/phy/data-intensive-science-mphil/s1_assessment/wdk24.git
+$ cd wdk24
+```
+
 To generate the docker image and run the container, navigate to the root directory and use:
+
 ```bash
 $ docker build -t <image_name> .
 $ docker run -ti <image_name>
