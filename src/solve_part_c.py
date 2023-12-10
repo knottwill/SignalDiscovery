@@ -1,3 +1,13 @@
+"""
+In this script we solve part c by checking that the total PDF
+integrates to unity over [5, 5.6] for 1000 random combinations
+of parameters. The outcome of the integral is checked to be
+approximately equal to 1 (with a relative tolerance of 1e-6).
+This is necessary since the integral outcome is a float, which
+often results in bad behaviour where the float is not perfectly 
+equal to the integer 1 (but is extremely close)
+"""
+
 import numpy as np
 from scipy.integrate import quad
 from pytest import approx
@@ -25,8 +35,7 @@ for _ in range(N_combos):
     # Performs integration of total PDF over range [alpha, beta]
     total_probability, error = quad(total_pdf, alpha, beta, args=(f, lam, mu, sigma))
 
-    # If the PDF did not integrate to 1 (with a relative tolerance of 1e-6) 
-    # then we set integrates_to_unity to False
+    # Check that integral came out to 1 (with a relative tolerance of 1e-6) 
     relative_tolerance = 1e-6
     if total_probability != approx(1, rel=relative_tolerance):
         integrates_to_unity=False # failed

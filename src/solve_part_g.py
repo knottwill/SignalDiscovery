@@ -1,3 +1,41 @@
+"""
+In this script we solve part g. This is done in three stages:
+
+*** Finding probability of discovery **
+----------------------------------------
+For 50 dataset sizes in the range [1500, 3000] we estimate the 
+probability of discovering the signal using the custom function 
+'probability_of_discovery' in the discovery.py module. We pass arguments
+to specify that 300 example datasets should be generated using the generation
+function that generates events from the 'two_signal_pdf', then each dataset should
+be subjected to the hypothesis test 'two_signal_test' (from the module
+hypothesis_test.py). This 'two_signal_test' function fits a 'signal + background' model and a
+'two signals + background' model to the dataset to serve as the null and alternate
+hypotheses, then calculates the p value using the Neyman-Pearson test statistic,
+and returns whether the p value is small enough to constitute a 'discovery'.
+The 'probability_of_discovery' then estimates the probability of discovery and
+uncertainty, using the outcome of all the hypothesis tests, and returns these estimates.
+
+*** Fitting predictive model ***
+----------------------------------
+A third order polynomial is then fitted to the 'discovery probability (P) vs dataset size (N)' 
+data using least squares estimation, and we calculate some goodness-of-fit metrics using the 
+custom function 'goodness_of_fit' (metrics: coverage, chi-squared per degree of freedom,
+and chi-squared test p value). Note: the dataset sizes N are normalised before the model
+is fitted, since helps iminuit estimate the parameters. 
+
+*** Finding critical size, N90 ***
+-----------------------------------
+We then find the size of the dataset, N90, that corresponds to a 90% probability of
+discovering the signal by solving the equation: model(N90) = 0.9 
+(where 'model' is the fitted third order polynomial). The uncertainty is estimated
+using a Monte Carlo simulation where the parameters of the model are sampled from a
+normal distribution (according to the uncertainties found from the least squares fit),
+then the equation is solved. The standard deviation of the set of solutions becomes the
+uncertainty for N90. This is all done with the custom function 'find_solution' in the 
+NP_analysis.py module.
+"""
+
 from time import time
 import numpy as np
 import pickle 
@@ -5,6 +43,7 @@ import os
 from iminuit import Minuit
 from iminuit.cost import LeastSquares
 
+# importing custom functions
 from generation import generate_from_two_signal_pdf
 from hypothesis_test import two_signal_test
 from discovery import probability_of_discovery
@@ -32,11 +71,11 @@ P_err = [] # error in probability of discovery
 for i, N_events in enumerate(N):
 
     p, p_err = probability_of_discovery(
-        N_events=N_events, 
-        n_trials=300,
-        true_params=true_params,
-        generation_func=generate_from_two_signal_pdf,
-        hypothesis_test=two_signal_test,
+        N_events=N_events, # size of dataset
+        n_trials=300, # number of datasets to generate and test
+        true_params=true_params, # true parameters for 'two_signal_pdf'
+        generation_func=generate_from_two_signal_pdf, # function to generate the datasets
+        hypothesis_test=two_signal_test, # function to perform the hypothesis test
     )
 
     P.append(p)
@@ -50,14 +89,6 @@ P, P_err = np.array(P), np.array(P_err)
 data_to_save = {'N': N, 'P': P, 'P_err': P_err}
 with open('part_g_data.pkl', 'wb') as file:
     pickle.dump(data_to_save, file)
-
-# import pandas as pd
-# filepath = 'part_g_data.pkl'
-# data = pd.read_pickle(filepath)
-
-# N = data['N']
-# P = data['P']
-# P_err = data['P_err']
 
 # ---------------------
 # Fit 3rd degree polynomial to data
@@ -96,11 +127,11 @@ print(f"chi2 per degree of freedom: {chisq_per_dof:.5}\n")
 
 initial_guess = (2600 - np.mean(N))/np.std(N)
 N90_norm, N90_norm_err = find_solution(
-    target=0.9,
-    initial_guess=initial_guess,
-    model = third_degree, 
-    params=mi.values,
-    errors=mi.errors
+    target=0.9, # target probability (0.9 is 90%)
+    initial_guess=initial_guess, # initial guess for N90
+    model = third_degree,  # predictive model
+    params=mi.values, # parameter estimates of predictive model
+    errors=mi.errors # uncertainties of parameter estimates
 )
 
 # converting back to non-normalised sizes

@@ -10,7 +10,7 @@ $ docker build -t <image_name> .
 $ docker run -ti <image_name>
 ```
 
-To replicate the results and/or plots from parts c,d,e,f and g, run the following scripts:
+To replicate the results and/or plots from parts c, d, e, f and g, run the following scripts:
 
 ```bash
 $ python src/solve_part_c.py

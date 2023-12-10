@@ -1,10 +1,10 @@
 """
-In this file we solve part d. We plot the signal, background and total 
-distributions with the true parameter values in two ways. In the first 
-plot we include the weightings on signal and background such that only 
-the total PDF is properly normalised but it is visually clear that the 
-combination of the signal-only and background-only models makes up the 
-total PDF. In the second plot, we properly normalise all distributions, 
+In this script we solve part d. We plot the signal, background and total 
+distributions with the true parameter values in two ways. 
+- In the first plot we include the weightings on signal and background such t
+hat only the total PDF is properly normalised but it is visually clear that 
+the total = signal + background
+- In the second plot, we properly normalise all distributions, 
 so that we are seeing the 'True PDFs' of the signal-only, background-only 
 and total PDFs.
 """
@@ -16,7 +16,7 @@ import os
 
 mplstyle.use('src/mphil.mplstyle')
 
-# import pdfs
+# import PDFs (from custom module)
 from distributions import signal_pdf, background_pdf, total_pdf
 
 # Upper & lower bounds
@@ -56,17 +56,16 @@ fig, ax = plt.subplots(1, 1, figsize=(10, 6))
 # First Plot - signal and background have weights applied
 # such that we can visually see that total = signal + background
 ax.plot(M_values, pdf_total, label='Total Probability Distribution')
-ax.plot(M_values, weighted_signal, label=f'Signal Only (with {f} weighting)', linestyle=':')
-ax.plot(M_values, weighted_background, label=f'Background Only (with {1-f} weighting)', linestyle='--')
+ax.plot(M_values, weighted_signal, label=f'Signal (with {f} weighting)', linestyle=':')
+ax.plot(M_values, weighted_background, label=f'Background (with {1-f} weighting)', linestyle='--')
 ax.set_xlabel('M')
 ax.set_ylabel('Probability Density')
-ax.set_title('Probability Distributions (Weighted)')
 ax.legend()
 ax.grid(True)
 
 plt.tight_layout()  # Adjusts the plots to fit into the figure neatly
 fig.savefig(f'plots/part_d_weighted.png')
-print('Plot saved in plots/part_d_weighted.png')
+print('First plot saved in plots/part_d_weighted.png')
 
 # ---------------------
 # Plotting the normalised PDFs 
@@ -81,10 +80,9 @@ ax.plot(M_values, pdf_signal, label='Signal PDF (Normalized)', linestyle=':')
 ax.plot(M_values, pdf_background, label='Background PDF (Normalized)', linestyle='--')
 ax.set_xlabel('M')
 ax.set_ylabel('Probability Density')
-ax.set_title('Probability Distributions (Properly Normalized)')
 ax.legend()
 ax.grid(True)
 
 plt.tight_layout()  # Adjusts the plots to fit into the figure neatly
 fig.savefig(f'plots/part_d_normalised.png')
-print('Plot saved in plots/part_d_normalised.png')
+print('Second plot saved in plots/part_d_normalised.png')

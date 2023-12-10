@@ -1,3 +1,15 @@
+"""
+In this script we solve part e by generating a sample of 100,000
+events, then fit a the total PDF to the sample using maximum likelihood
+estimation with iminuit. As starting parameters, we add a random shift 
+to the true parameter values of up to 30% of their absolute value. 
+The uncertainties are calculated by iminuit as the minimum variance bound. 
+We then bin and plot the data, where the uncertainties are given by the 
+square root of the bin counts, then scaled to be the uncertainty of the 
+bin density rather than bin count. The signal, background and total
+PDFs are overlaid over the data using the estimated parameters.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.style as mplstyle
@@ -6,9 +18,8 @@ from iminuit.cost import UnbinnedNLL
 import matplotlib.style as mplstyle
 import os
 
-# import custom generation function
+# imports from custom modules (generation function and PDFs)
 from generation import generate_from_total_pdf
-# import our custom PDFs
 from distributions import total_pdf, signal_pdf, background_pdf
 
 mplstyle.use('src/mphil.mplstyle')
@@ -69,7 +80,7 @@ mi.limits['mu'] = (alpha, beta) # the signal should not peak outside of [alpha, 
 
 # Running Minimisation and the error finding algorithms
 mi.migrad() # minimisation
-mi.hesse() # finds symmetric uncertainty
+mi.hesse() # finds symmetric uncertainty (min variance bound)
 mi.minos() # finds non-symmetric confidence interval
 
 assert mi.valid
@@ -105,7 +116,6 @@ ax.plot(midpoints, weighted_background, label='Background', color='#2ca02c', lin
 ax.grid(True)
 ax.set_xlabel('M')
 ax.set_ylabel('Density')
-ax.set_title(f'Maximum Likelihood Estimation from 100K events')
 ax.legend()
 
 # Make plots/ directory if it doesn't already exist

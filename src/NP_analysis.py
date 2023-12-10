@@ -24,17 +24,16 @@ def goodness_of_fit(pull):
 
     Returns
     ----------
-    tuple
-        tuple containing goodness-of-fit metrics. The elements are:
+    tuple containing goodness-of-fit metrics. The elements are:
 
-        coverage: Fraction of the model's predictions which lie
+        - coverage: Fraction of the model's predictions which lie
         within the uncertainty of the measurement. (Should be close to 68.3%)
 
-        p_value: p value of the chi2 test. This is the probability of observing
+        - p_value: p value of the chi2 test. This is the probability of observing
         a chi2 as extreme or more extreme than the value measured, assuming the model
         is correct.
-
-        chisq_per_dof: the chi2 per degree of freedom 
+        
+        - chisq_per_dof: the chi2 per degree of freedom 
         (should be close to 1)
     """
 
