@@ -85,6 +85,12 @@ mi.minos() # finds non-symmetric confidence interval
 
 assert mi.valid
 print(mi)
+print('')
+print('Parameter estimates:')
+print(f"f: {mi.values['f']} +- {mi.errors['f']}")
+print(f"lam: {mi.values['lam']} +- {mi.errors['lam']}")
+print(f"mu: {mi.values['mu']} +- {mi.errors['mu']}")
+print(f"sigma: {mi.values['sigma']} +- {mi.errors['sigma']}")
 
 # ---------------
 # Binning and Plotting Results
@@ -123,3 +129,5 @@ if not os.path.exists('plots/'):
     os.makedirs('plots/')
 
 fig.savefig('plots/part_e.png')
+print('')
+print('Plot saved in plots/part_e.png')

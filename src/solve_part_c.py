@@ -42,7 +42,7 @@ for _ in range(N_combos):
 
 # Print statements if test was succeeded vs failed
 if integrates_to_unity:
-    print(f'As expected, the total PDF integrated to approximately unity (with a relative ')
+    print(f'As expected, the total PDF integrated to unity (with a relative ')
     print(f'tolerance of {relative_tolerance}) on all {N_combos} trials\n')
 else:
     print('Failed.')
