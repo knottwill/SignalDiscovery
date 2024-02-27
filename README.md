@@ -1,6 +1,8 @@
-# S1 Coursework - William Knottenbelt
+# Statistics 1 - Coursework
 
-This repository contains all code necessary to reproduce the results discussed in `report/main.pdf`.
+This project is primarily concerned with the use of statistical methods to discover guassian signals amoung an exponentially decaying background (reminiscent of the Higgs boson discovery). We perform Neyman-Pearson hypothesis tests for the presence of signal by fitting probability distributions to data using maximum likelihood estimation, and utilising the Neyman-Pearson test statistic. Read the assigment in `assignment.pdf` and the report in `report/main.pdf` for further details. 
+
+The codebase & report contained in this repository was submitted in fulfillment of the coursework assigment detailed in `assigment.pdf`. This submission recieved a grade of 89% (may be subject to moderation in Final Examiners' Meeting in September 2024).
 
 ### Usage
 
